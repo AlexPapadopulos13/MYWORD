@@ -1,0 +1,15 @@
+# Local tool settings
+.claude/
+
+# Exported upload packages and notebook backups
+*.zip
+myword-backup-*.json
+
+# Secrets (not used by this project, but never commit them)
+.env
+.env.*
+
+# OS files
+Thumbs.db
+desktop.ini
+.DS_Store

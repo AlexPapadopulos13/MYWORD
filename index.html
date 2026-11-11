@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>MYWORD Notebook</title>
+  <meta name="description" content="Write or record your English sentences, check them, and find any word again.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 60'%3E%3Crect width='56' height='48' rx='8' fill='%23f2a13b'/%3E%3Cpath d='M10,44 L10,58 L24,44 Z' fill='%23f2a13b'/%3E%3Cpath d='M16,36 V12 L28,28 L40,12 V36' fill='none' stroke='%232a2420' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <svg viewBox="0 0 342 60" role="img" aria-label="MYWORD">
+      <rect x="0" y="0" width="56" height="48" rx="8" fill="#f2a13b"/>
+      <path d="M10,44 L10,58 L24,44 Z" fill="#f2a13b"/>
+      <path d="M16,36 V12 L28,28 L40,12 V36" fill="none" stroke="#2a2420" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      <g transform="translate(74,0)" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4,44 V4 L20,30 L36,4 V44"/><path d="M48,4 L63,24 L78,4 M63,24 V44"/><path d="M90,4 L99,44 L110,12 L121,44 L130,4"/>
+        <ellipse cx="159" cy="24" rx="19" ry="20"/><path d="M190,44 V4 H206 A11 11 0 0 1 206,26 H190 M204,26 L218,44"/><path d="M230,4 V44 H242 A20 20 0 0 0 242,4 Z"/>
+      </g>
+    </svg>
+    <span class="count" id="count"></span>
+  </header>
+
+  <div>
+    <h1>Notebook</h1>
+    <p class="lede">Write or record your English sentences, check them, and find any word again.</p>
+  </div>
+
+  <section class="card composer" aria-labelledby="composer-title">
+    <h2 id="composer-title" class="sr">Add a sentence</h2>
+    <div id="editing" class="editing-banner" hidden><span>Editing a sentence</span><button class="btn ghost" id="cancel-edit" type="button">Cancel</button></div>
+    <div class="field">
+      <div class="field-head">
+        <label for="text" id="text-label">Your sentence</label>
+        <div class="tabs" role="tablist" aria-label="How to add your sentence">
+          <button class="tab" role="tab" type="button" id="tab-type" aria-selected="true" aria-controls="text"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>Type</button>
+          <button class="tab" role="tab" type="button" id="tab-record" aria-selected="false" aria-controls="record-panel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Record</button>
+        </div>
+      </div>
+
+      <div id="record-panel" class="audio-box" role="tabpanel" aria-labelledby="tab-record" hidden>
+        <div class="row">
+          <button class="btn primary" id="rec-btn" type="button"></button>
+          <button class="btn ghost" id="file-btn" type="button">Choose a recording</button>
+          <button class="btn danger" id="clear-audio" type="button" hidden>Remove recording</button>
+          <input type="file" id="file-input" accept="audio/*,video/mp4,video/webm" hidden>
+        </div>
+        <div class="live" id="live" hidden>
+          <span class="live-time" id="live-time" aria-live="off">0:00</span>
+          <canvas class="live-meter" id="live-meter" aria-hidden="true"></canvas>
+        </div>
+        <div id="preview"></div>
+        <p class="msg" id="audio-msg" role="status">Press Record and say your sentence in English.</p>
+      </div>
+
+      <textarea id="text" placeholder="Yesterday I go to the market with my sister."></textarea>
+      <p class="hint" id="text-hint">Type your sentence in English.</p>
+      <p class="attached" id="attached" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>A recording is attached. <button type="button" class="link-btn" id="show-record">Listen or change it</button></p>
+    </div>
+
+    <div class="field">
+      <div class="field-head">
+        <label for="correction">Correction</label>
+        <button class="btn secondary" id="ai-btn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><span>Check grammar</span></button>
+      </div>
+      <textarea id="correction" placeholder="Press “Check grammar” and the corrected sentence appears here. You can still edit it."></textarea>
+      <div class="ai-result" id="ai-result" hidden></div>
+      <p class="msg" id="ai-msg" role="status"></p>
+      <p class="hint">Checked for free by <a href="https://languagetool.org" target="_blank" rel="noopener">LanguageTool</a>. Your sentence is sent to their server.</p>
+    </div>
+    <div class="field">
+      <span class="lbl" id="status-lbl">Mark</span>
+      <div class="seg" role="group" aria-labelledby="status-lbl">
+        <button class="chip" type="button" data-status="none" aria-pressed="true">Not checked</button>
+        <button class="chip status-correct" type="button" data-status="correct" aria-pressed="false">Correct</button>
+        <button class="chip status-review" type="button" data-status="review" aria-pressed="false">Needs work</button>
+        <button class="chip" type="button" id="star-new" aria-pressed="false">★ Favourite</button>
+      </div>
+    </div>
+    <div class="field">
+      <span class="lbl" id="cat-lbl">Color</span>
+      <div class="seg cat-pick" id="cat-pick" role="radiogroup" aria-labelledby="cat-lbl"></div>
+    </div>
+    <div class="field">
+      <label for="group-select">Group</label>
+      <div class="row">
+        <select id="group-select" class="select"></select>
+        <input type="text" id="composer-group-name" class="grow" maxlength="40" placeholder="New group name" autocomplete="off" hidden>
+        <button class="btn secondary" id="composer-group-add" type="button" hidden>Add</button>
+      </div>
+    </div>
+    <div class="field">
+      <label for="tags">Tags</label>
+      <input type="text" id="tags" placeholder="past simple, travel" autocomplete="off">
+      <p class="hint">Separate tags with commas.</p>
+    </div>
+    <div class="row">
+      <button class="btn primary" id="save" type="button">Save sentence</button>
+      <p class="msg" id="save-msg" role="status"></p>
+    </div>
+  </section>
+
+  <section class="groups" aria-labelledby="groups-title">
+    <div class="groups-head">
+      <h2 id="groups-title" class="section-title">Groups</h2>
+      <button class="btn ghost" id="new-group-btn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>New group</span></button>
+    </div>
+    <form class="group-form" id="group-form" hidden>
+      <label for="group-name" class="sr" id="group-form-label">Group name</label>
+      <input type="text" id="group-name" maxlength="40" placeholder="Group name, like “Lesson 5” or “Interview prep”" autocomplete="off">
+      <button class="btn primary" type="submit" id="group-save">Create</button>
+      <button class="btn ghost" type="button" id="group-cancel">Cancel</button>
+    </form>
+    <nav class="group-nav" id="group-nav" aria-label="Groups"></nav>
+    <div class="group-bar" id="group-bar" hidden></div>
+    <p class="msg" id="group-msg" role="status"></p>
+  </section>
+
+  <section class="search" aria-labelledby="search-title">
+    <h2 id="search-title" class="sr">Search your notebook</h2>
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      <label for="q" class="sr">Search a word</label>
+      <input type="search" id="q" placeholder="Search a word, like “went”" autocomplete="off">
+    </div>
+    <div class="filters">
+      <span class="lbl">Show</span>
+      <div class="seg" id="mark-filter">
+        <button class="chip" type="button" data-mark="all" aria-pressed="true">All</button>
+        <button class="chip" type="button" data-mark="star" aria-pressed="false">★ Favourites</button>
+      </div>
+    </div>
+    <div class="tags" id="tag-filter"></div>
+    <p class="summary" id="summary" role="status"></p>
+  </section>
+
+  <section class="list" id="list" aria-label="Sentences">
+    <div class="empty-state"><strong>Loading your notebook…</strong>Your saved sentences will appear here.</div>
+  </section>
+
+  <section class="card backup" aria-labelledby="backup-title">
+    <div>
+      <h2 id="backup-title" class="backup-title">Backup</h2>
+      <p class="hint">Your notebook is saved only in this browser. Export a backup file now and then, and keep it somewhere safe (a USB stick, cloud drive or email). Import it to bring your sentences and recordings back, in any browser or on another computer.</p>
+    </div>
+    <div class="row">
+      <button class="btn secondary" id="export-btn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>Export backup</span></button>
+      <button class="btn ghost" id="import-btn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V9M7 14l5-5 5 5M5 4h14"/></svg><span>Import backup</span></button>
+      <input type="file" id="import-input" accept=".json,application/json" hidden>
+    </div>
+    <p class="msg" id="backup-msg" role="status"></p>
+  </section>
+</div>
+
+<script src="js/store.js"></script>
+<script src="js/recorder.js"></script>
+<script src="js/speech.js"></script>
+<script src="js/rules.js"></script>
+<script src="js/checker.js"></script>
+<script src="js/player.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
