@@ -9,7 +9,230 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap">
-  <link rel="stylesheet" href="css/styles.css">
+  <style>
+/* MYWORD Notebook — design tokens and styles from the MYWORD design system.
+   Layout: one calm column — logo, composer card, search bar, then the sentence list. */
+:root{
+  --surface:#fbf8f3;--raised:#ffffff;--sunken:#f3eee6;--ink:#2a2420;--muted:#6b6159;--line:#e6dfd4;--line-strong:#8f8476;
+  --amber:#f2a13b;--btn:#b4530a;--btn-hover:#8a3f06;--btn-ink:#ffffff;--link:#b4530a;--soft:#fdeccf;--soft-ink:#8a3f06;
+  --success:#2f7d4f;--success-soft:#e3f1e8;--error:#b42318;--error-soft:#fbe9e7;--hl:#f9d77a;--hl-ink:#2a2420;
+  --wave:#cfc5b8;
+  --font:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r-sm:4px;--r-md:6px;--r-lg:8px;
+  --shadow:0 1px 2px rgba(42,36,32,.06),0 2px 8px rgba(42,36,32,.04);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --surface:#1b1815;--raised:#24201b;--sunken:#2d2822;--ink:#f3ece3;--muted:#b9ad9f;--line:#3a342c;--line-strong:#857a6c;
+  --btn:#f2a13b;--btn-hover:#f6b866;--btn-ink:#2a2420;--link:#f4b25e;--soft:#3b2b18;--soft-ink:#f7c98a;
+  --success:#74c995;--success-soft:#1f3227;--error:#ff8f7f;--error-soft:#3a201c;--hl:#7a5612;--hl-ink:#fff6e6;
+  --wave:#4d453b;
+  --shadow:0 1px 2px rgba(0,0,0,.3);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --surface:#1b1815;--raised:#24201b;--sunken:#2d2822;--ink:#f3ece3;--muted:#b9ad9f;--line:#3a342c;--line-strong:#857a6c;
+  --btn:#f2a13b;--btn-hover:#f6b866;--btn-ink:#2a2420;--link:#f4b25e;--soft:#3b2b18;--soft-ink:#f7c98a;
+  --success:#74c995;--success-soft:#1f3227;--error:#ff8f7f;--error-soft:#3a201c;--hl:#7a5612;--hl-ink:#fff6e6;
+  --wave:#4d453b;
+  --shadow:0 1px 2px rgba(0,0,0,.3);color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--surface);color:var(--ink);font-family:var(--font);font-size:16px;line-height:24px}
+[hidden]{display:none!important}
+.wrap{max-width:760px;margin:0 auto;padding-block:24px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:24px}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+header svg{height:30px;width:auto;display:block}
+.count{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+h1{font-size:32px;line-height:40px;font-weight:600;letter-spacing:-.25px;margin:0;text-wrap:balance}
+.lede{margin:4px 0 0;color:var(--muted)}
+.card{background:var(--raised);border:1px solid var(--line);border-radius:var(--r-lg);padding:24px;display:flex;flex-direction:column;gap:16px}
+.composer{box-shadow:var(--shadow)}
+.field{display:flex;flex-direction:column;gap:8px}
+label,.lbl{font-size:14px;line-height:20px;font-weight:500}
+.optional{color:var(--muted);font-weight:400}
+.hint{font-size:14px;line-height:20px;color:var(--muted);margin:0}
+.hint a{color:var(--link)}
+textarea,input[type=text],input[type=search]{font:inherit;font-size:16px;color:var(--ink);background:var(--raised);border:1px solid var(--line-strong);border-radius:var(--r-md);padding:10px 12px;width:100%}
+textarea{min-height:76px;resize:vertical;line-height:24px}
+textarea:focus,input:focus{outline:2px solid var(--btn);outline-offset:1px;border-color:var(--btn)}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.btn{font:inherit;font-weight:500;font-size:15px;min-height:40px;padding:0 16px;border-radius:var(--r-md);border:1px solid transparent;cursor:pointer;display:inline-flex;align-items:center;gap:8px;justify-content:center;background:var(--raised);color:var(--ink)}
+.btn svg{width:18px;height:18px;flex:none}
+.btn:focus-visible,.chip:focus-visible,.icon-btn:focus-visible,.tag:focus-visible,.play:focus-visible,.wave:focus-visible{outline:2px solid var(--btn);outline-offset:2px}
+.primary{background:var(--btn);color:var(--btn-ink)}.primary:hover{background:var(--btn-hover)}
+.secondary{border-color:var(--line-strong)}.secondary:hover{background:var(--sunken)}
+.ghost{background:transparent;color:var(--link)}.ghost:hover{background:var(--soft);color:var(--soft-ink)}
+.danger{background:transparent;color:var(--error)}.danger:hover{background:var(--error-soft)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.rec,.primary.rec{background:var(--raised);border-color:var(--error);color:var(--error)}
+.rec:hover,.primary.rec:hover{background:var(--error-soft)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--error);animation:pulse 1.2s infinite;flex:none}
+@keyframes pulse{50%{opacity:.3}}
+@media (prefers-reduced-motion:reduce){.dot{animation:none}}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:14px;line-height:20px;font-weight:500;min-height:36px;padding:6px 12px;border-radius:var(--r-md);border:1px solid var(--line-strong);background:var(--raised);color:var(--ink);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--soft);border-color:var(--btn);color:var(--soft-ink)}
+.status-correct[aria-pressed="true"]{background:var(--success-soft);border-color:var(--success);color:var(--success)}
+.status-review[aria-pressed="true"]{background:var(--error-soft);border-color:var(--error);color:var(--error)}
+.audio-box{background:var(--sunken);border-radius:var(--r-md);padding:12px;display:flex;flex-direction:column;gap:10px}
+.msg{font-size:14px;line-height:20px;margin:0}
+.msg.err{color:var(--error)}.msg.ok{color:var(--success)}
+.search{display:flex;flex-direction:column;gap:12px}
+.search-box{position:relative}
+.search-box svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:20px;height:20px;color:var(--muted);pointer-events:none}
+.search-box input{padding-left:42px;min-height:48px;font-size:17px}
+.filters{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+.filters .lbl{color:var(--muted);font-weight:500}
+.summary{font-size:14px;color:var(--muted);margin:0}
+.summary:empty{display:none}
+.list{display:flex;flex-direction:column;gap:12px}
+.entry{background:var(--raised);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;display:flex;flex-direction:column;gap:12px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;line-height:18px;color:var(--muted)}
+.kind{font-weight:600;letter-spacing:.04em;text-transform:uppercase;font-size:12px;padding:2px 8px;border-radius:var(--r-sm);background:var(--sunken);color:var(--ink)}
+.pill{font-size:12px;font-weight:600;padding:2px 8px;border-radius:var(--r-sm)}
+.pill.correct{background:var(--success-soft);color:var(--success)}
+.pill.review{background:var(--error-soft);color:var(--error)}
+.sentence{font-size:18px;line-height:28px;margin:0;overflow-wrap:anywhere;white-space:pre-wrap}
+.sentence.empty{color:var(--muted);font-style:italic;font-size:16px}
+.correction{margin:0;padding:10px 12px;background:var(--success-soft);border-radius:var(--r-md);overflow-wrap:anywhere;white-space:pre-wrap}
+.correction b{font-size:13px;font-weight:600;color:var(--success);display:block;letter-spacing:.02em}
+mark{background:var(--hl);color:var(--hl-ink);border-radius:3px;padding:0 2px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tags:empty{display:none}
+.tag{font:inherit;font-size:13px;line-height:18px;padding:3px 10px;border-radius:999px;background:var(--soft);color:var(--soft-ink);border:0;cursor:pointer}
+.tag[aria-pressed="true"]{outline:2px solid var(--btn)}
+.actions{display:flex;flex-wrap:wrap;gap:4px;align-items:center;border-top:1px solid var(--line);padding-top:12px}
+.actions .spacer{flex:1}
+.icon-btn{font:inherit;font-size:14px;font-weight:500;min-height:36px;padding:0 10px;border-radius:var(--r-md);border:0;background:transparent;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.icon-btn:hover{background:var(--sunken);color:var(--ink)}
+.icon-btn svg{width:18px;height:18px}
+.icon-btn.on{color:var(--btn)}
+.icon-btn.on svg{fill:currentColor}
+.icon-btn.is-correct{color:var(--success)}
+.icon-btn.is-review,.icon-btn.del-yes{color:var(--error)}
+.empty-state{text-align:left;padding:32px 24px;border:1px dashed var(--line-strong);border-radius:var(--r-lg);color:var(--muted)}
+.empty-state strong{color:var(--ink);display:block;font-size:17px;margin-bottom:4px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.editing-banner{display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--soft);color:var(--soft-ink);padding:8px 12px;border-radius:var(--r-md);font-size:14px;font-weight:500}
+
+/* ---------- groups ---------- */
+.groups{display:flex;flex-direction:column;gap:12px}
+.groups .msg:empty,.backup .msg:empty{display:none}
+.groups-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.section-title{font-size:20px;line-height:28px;font-weight:600;margin:0}
+.group-form{display:flex;gap:8px;flex-wrap:wrap}
+.group-form input{flex:1 1 220px;min-width:0}
+.group-nav{display:flex;flex-wrap:wrap;gap:8px}
+.group-btn{font:inherit;font-size:15px;font-weight:500;min-height:40px;padding:6px 14px;border-radius:var(--r-md);border:1px solid var(--line);background:var(--raised);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:8px;max-width:100%}
+.group-btn svg{width:16px;height:16px;flex:none;color:var(--muted)}
+.group-btn .gname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.group-btn .n{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;background:var(--sunken);border-radius:999px;padding:0 8px;line-height:20px}
+.group-btn:hover{border-color:var(--line-strong)}
+.group-btn[aria-current="true"]{background:var(--soft);border-color:var(--btn);color:var(--soft-ink)}
+.group-btn[aria-current="true"] svg{color:var(--soft-ink)}
+.group-btn[aria-current="true"] .n{background:var(--raised);color:var(--soft-ink)}
+.group-btn:focus-visible,.group-chip:focus-visible{outline:2px solid var(--btn);outline-offset:2px}
+.group-bar{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;background:var(--sunken);border-radius:var(--r-md);padding:10px 12px}
+.group-bar .title{font-weight:600;font-size:17px;overflow-wrap:anywhere;flex:1 1 200px;min-width:0;display:flex;align-items:center;gap:8px}
+.group-bar .title svg{width:18px;height:18px;flex:none;color:var(--btn)}
+.group-bar .sub{font-weight:400;font-size:14px;color:var(--muted)}
+.group-bar input{flex:1 1 200px;min-width:0}
+.group-chip{font:inherit;font-size:12px;font-weight:600;padding:2px 8px;border-radius:var(--r-sm);border:0;background:var(--sunken);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:4px;max-width:100%}
+.group-chip svg{width:13px;height:13px;flex:none}
+.group-chip:hover{background:var(--soft);color:var(--soft-ink)}
+.group-menu{display:flex;flex-wrap:wrap;gap:6px;padding-top:4px;align-items:center}
+.group-menu .chip{min-height:32px;padding:4px 10px;font-size:13px}
+.group-menu .chip[aria-checked="true"]{background:var(--soft);border-color:var(--btn);color:var(--soft-ink)}
+.group-menu .new{display:flex;gap:6px;flex:1 1 240px;min-width:0}
+.group-menu .new input{min-height:32px;padding:4px 10px;font-size:14px;flex:1;min-width:0}
+.group-menu .new .btn{min-height:32px;font-size:13px;padding:0 10px}
+.select{font:inherit;font-size:16px;color:var(--ink);background:var(--raised);border:1px solid var(--line-strong);border-radius:var(--r-md);padding:9px 12px;min-height:44px;max-width:100%;flex:0 1 auto}
+.select:focus{outline:2px solid var(--btn);outline-offset:1px}
+
+/* ---------- backup ---------- */
+.backup{gap:12px}
+.backup-title{font-size:17px;line-height:24px;font-weight:600;margin:0 0 4px}
+
+/* ---------- color categories ---------- */
+:root{
+  --cat-blue:#2563eb;--cat-blue-soft:#e3ecfd;--cat-green:#2f7d4f;--cat-green-soft:#e3f1e8;
+  --cat-orange:#c2410c;--cat-orange-soft:#fdeadb;--cat-purple:#7c3aed;--cat-purple-soft:#efe8fd;
+  --cat-pink:#be185d;--cat-pink-soft:#fce7f1;--cat-teal:#0f766e;--cat-teal-soft:#dcf2ef;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --cat-blue:#7fa8ff;--cat-blue-soft:#1d2a45;--cat-green:#74c995;--cat-green-soft:#1f3227;
+  --cat-orange:#f6a463;--cat-orange-soft:#3d2615;--cat-purple:#b69bff;--cat-purple-soft:#2c2342;
+  --cat-pink:#f38bbb;--cat-pink-soft:#3d1d2c;--cat-teal:#5fd0c2;--cat-teal-soft:#16332f}}
+:root[data-theme="dark"]{
+  --cat-blue:#7fa8ff;--cat-blue-soft:#1d2a45;--cat-green:#74c995;--cat-green-soft:#1f3227;
+  --cat-orange:#f6a463;--cat-orange-soft:#3d2615;--cat-purple:#b69bff;--cat-purple-soft:#2c2342;
+  --cat-pink:#f38bbb;--cat-pink-soft:#3d1d2c;--cat-teal:#5fd0c2;--cat-teal-soft:#16332f}
+.cat-blue{--c:var(--cat-blue);--c-soft:var(--cat-blue-soft)}
+.cat-green{--c:var(--cat-green);--c-soft:var(--cat-green-soft)}
+.cat-orange{--c:var(--cat-orange);--c-soft:var(--cat-orange-soft)}
+.cat-purple{--c:var(--cat-purple);--c-soft:var(--cat-purple-soft)}
+.cat-pink{--c:var(--cat-pink);--c-soft:var(--cat-pink-soft)}
+.cat-teal{--c:var(--cat-teal);--c-soft:var(--cat-teal-soft)}
+.cat-none{--c:initial;--c-soft:initial}
+.swatch{width:12px;height:12px;border-radius:50%;background:var(--c,transparent);border:1.5px solid var(--c,var(--line-strong));flex:none;display:inline-block}
+.cat-chip{display:inline-flex;align-items:center;gap:8px}
+.cat-chip[aria-checked="true"]{background:var(--c-soft,var(--soft));border-color:var(--c,var(--btn));color:var(--c,var(--soft-ink))}
+.entry.has-cat{border-left:4px solid var(--c);padding-left:17px}
+.cat-pill{font-size:12px;font-weight:600;padding:2px 8px;border-radius:var(--r-sm);background:var(--c-soft);color:var(--c);display:inline-flex;align-items:center;gap:6px}
+.cat-menu{display:flex;flex-wrap:wrap;gap:6px;padding-top:4px}
+.cat-menu .chip{min-height:32px;padding:4px 10px;font-size:13px}
+
+/* ---------- type / record tabs ---------- */
+.field-head{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap}
+.tabs{display:flex;gap:4px;background:var(--sunken);padding:4px;border-radius:var(--r-md)}
+.tab{font:inherit;font-weight:500;font-size:15px;border:0;background:transparent;color:var(--muted);padding:6px 14px;border-radius:var(--r-sm);cursor:pointer;min-height:36px;display:inline-flex;align-items:center;gap:6px}
+.tab svg{width:16px;height:16px;flex:none}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--raised);color:var(--ink);box-shadow:var(--shadow)}
+.tab:focus-visible,.link-btn:focus-visible{outline:2px solid var(--btn);outline-offset:2px}
+.attached{margin:0;display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:14px;line-height:20px;color:var(--muted)}
+.attached svg{width:16px;height:16px;color:var(--btn)}
+.link-btn{font:inherit;font-size:14px;font-weight:500;background:none;border:0;padding:0;color:var(--link);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.listening{color:var(--error);font-weight:500}
+
+/* ---------- AI correction ---------- */
+.ai-result{display:flex;flex-direction:column;gap:6px;background:var(--sunken);padding:10px 12px;border-radius:var(--r-md);font-size:14px;line-height:20px}
+.ai-result .verdict{font-weight:600}
+.ai-result .verdict.ok{color:var(--success)}
+.ai-result .verdict.fix{color:var(--error)}
+.ai-result .changes{margin:0;color:var(--ink);overflow-wrap:anywhere}
+.explain{margin:0;font-size:14px;line-height:20px;color:var(--muted);overflow-wrap:anywhere}
+ins.fix{text-decoration:none;background:var(--success-soft);color:var(--success);font-weight:600;border-radius:3px;padding:0 2px;box-shadow:inset 0 -2px 0 var(--success)}
+del.fix{color:var(--error);text-decoration:line-through;text-decoration-thickness:1.5px}
+.ai-spin{width:14px;height:14px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:spin .8s linear infinite;flex:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.ai-spin{animation-duration:2s}}
+
+/* ---------- live recording ---------- */
+.live{display:flex;align-items:center;gap:12px;background:var(--raised);border:1px solid var(--error);border-radius:var(--r-md);padding:8px 12px}
+.live-time{font-variant-numeric:tabular-nums;font-weight:600;color:var(--error);min-width:3.2em}
+.live-meter{flex:1;min-width:0;height:40px;display:block}
+
+/* ---------- recorder-style player ---------- */
+.player{display:flex;align-items:center;gap:12px;background:var(--sunken);border-radius:var(--r-md);padding:10px 12px}
+.audio-box .player{background:var(--raised);border:1px solid var(--line)}
+.play{flex:none;width:44px;height:44px;border-radius:50%;border:0;background:var(--btn);color:var(--btn-ink);cursor:pointer;display:grid;place-items:center;padding:0}
+.play:hover{background:var(--btn-hover)}
+.play svg{width:20px;height:20px;fill:currentColor}
+.play:disabled{opacity:.55;cursor:wait}
+.p-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.wave{position:relative;height:36px;cursor:pointer;touch-action:none;border-radius:var(--r-sm)}
+.bars{position:absolute;inset:0;display:flex;align-items:center;gap:2px}
+.bars i{flex:1;min-width:1px;border-radius:2px;background:var(--wave);display:block}
+.bars.played{clip-path:inset(0 calc(100% - var(--p,0%)) 0 0)}
+.bars.played i{background:var(--btn)}
+.p-foot{display:flex;align-items:center;gap:4px;font-size:13px;line-height:18px;color:var(--muted)}
+.p-time{font-variant-numeric:tabular-nums;flex:1}
+.p-foot .icon-btn{min-height:28px;padding:0 8px;font-size:13px}
+.p-foot .icon-btn svg{width:16px;height:16px}
+.speed{min-width:44px;justify-content:center;font-variant-numeric:tabular-nums}
+.player.playing .play{background:var(--btn-hover)}
+
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -157,12 +380,1874 @@
   </section>
 </div>
 
-<script src="js/store.js"></script>
-<script src="js/recorder.js"></script>
-<script src="js/speech.js"></script>
-<script src="js/rules.js"></script>
-<script src="js/checker.js"></script>
-<script src="js/player.js"></script>
-<script src="js/app.js"></script>
+<script>
+/* MYWORD store — saves sentences (and their recordings as Blobs) and groups
+   in the browser's IndexedDB. */
+(function () {
+  var DB_NAME = "myword", VERSION = 2;
+  var SENTENCES = "sentences", GROUPS = "groups";
+  var dbPromise = null;
+
+  function open() {
+    if (dbPromise) return dbPromise;
+    dbPromise = new Promise(function (resolve, reject) {
+      if (!window.indexedDB) { reject(new Error("IndexedDB unavailable")); return; }
+      var req = indexedDB.open(DB_NAME, VERSION);
+      req.onupgradeneeded = function () {
+        var db = req.result;
+        if (!db.objectStoreNames.contains(SENTENCES)) {
+          var s = db.createObjectStore(SENTENCES, { keyPath: "id" });
+          s.createIndex("createdAt", "createdAt");
+        }
+        if (!db.objectStoreNames.contains(GROUPS)) db.createObjectStore(GROUPS, { keyPath: "id" });
+      };
+      req.onsuccess = function () {
+        var db = req.result;
+        // If a newer version of the page opens in another tab, let it upgrade.
+        db.onversionchange = function () { db.close(); window.dispatchEvent(new Event("myword-outdated")); };
+        resolve(db);
+      };
+      req.onerror = function () { reject(req.error); };
+      // An older copy of the page is still open in another tab; the upgrade waits for it.
+      req.onblocked = function () { window.dispatchEvent(new Event("myword-blocked")); };
+    });
+    return dbPromise;
+  }
+
+  function tx(name, mode, fn) {
+    return open().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var t = db.transaction(name, mode), s = t.objectStore(name), result;
+        fn(s, function (r) { result = r; });
+        t.oncomplete = function () { resolve(result); };
+        t.onerror = function () { reject(t.error); };
+        t.onabort = function () { reject(t.error || new Error("Transaction aborted")); };
+      });
+    });
+  }
+
+  function newId() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+  }
+
+  function table(name, sortFn) {
+    return {
+      all: function () {
+        return tx(name, "readonly", function (s, done) {
+          var r = s.getAll();
+          r.onsuccess = function () { done((r.result || []).sort(sortFn)); };
+        });
+      },
+      get: function (id) {
+        return tx(name, "readonly", function (s, done) { var r = s.get(id); r.onsuccess = function () { done(r.result); }; });
+      },
+      add: function (rec) {
+        rec = Object.assign({}, rec, { id: newId() });
+        return tx(name, "readwrite", function (s, done) { s.add(rec); done(rec); });
+      },
+      update: function (id, patch) {
+        return tx(name, "readwrite", function (s, done) {
+          var r = s.get(id);
+          r.onsuccess = function () {
+            if (!r.result) return;
+            var next = Object.assign({}, r.result, patch, { id: id });
+            s.put(next); done(next);
+          };
+        });
+      },
+      put: function (rec) { // insert or replace, keeping rec.id (used by backup import)
+        return tx(name, "readwrite", function (s, done) { s.put(rec); done(rec); });
+      },
+      remove: function (id) {
+        return tx(name, "readwrite", function (s) { s.delete(id); });
+      }
+    };
+  }
+
+  var store = table(SENTENCES, function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
+  store.groups = table(GROUPS, function (a, b) { return (a.createdAt || 0) - (b.createdAt || 0); });
+
+  // Ask the browser to keep this data even when disk space runs low.
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () {}); } catch (e) {}
+
+  window.MywordStore = store;
+})();
+
+</script>
+<script>
+/* MYWORD recorder — microphone capture with a live timer and level meter,
+   plus audio analysis (true duration + waveform peaks) for any recording. */
+(function () {
+  var MAX_SECONDS = 5 * 60;
+  var PEAK_COUNT = 64;
+  var AC = window.AudioContext || window.webkitAudioContext;
+
+  function pickMime() {
+    if (!window.MediaRecorder || !MediaRecorder.isTypeSupported) return "";
+    var list = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4;codecs=mp4a.40.2", "audio/mp4", "audio/ogg;codecs=opus"];
+    for (var i = 0; i < list.length; i++) if (MediaRecorder.isTypeSupported(list[i])) return list[i];
+    return "";
+  }
+
+  function supportProblem() {
+    if (!window.isSecureContext) return "insecure";
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) return "unsupported";
+    return null;
+  }
+
+  function errorMessage(err) {
+    var name = (err && (err.name || err.message)) || String(err);
+    if (name === "insecure") return "The microphone only works when this page is opened from http://localhost:8080 or an https:// address.";
+    if (name === "unsupported") return "This browser can't record audio. Try the latest Chrome, Edge, Firefox or Safari, or use “Choose a recording”.";
+    if (name === "NotAllowedError" || name === "PermissionDeniedError" || name === "SecurityError")
+      return "Microphone access is blocked. Click the microphone or lock icon in the address bar, allow the microphone, then press Record again.";
+    if (name === "NotFoundError" || name === "DevicesNotFoundError" || name === "OverconstrainedError")
+      return "No microphone was found. Plug one in (or check your system sound settings) and try again.";
+    if (name === "NotReadableError" || name === "TrackStartError" || name === "AbortError")
+      return "The microphone is busy in another app. Close apps that use it (calls, other recorders) and try again.";
+    return "Couldn't start recording (" + name + "). Try again, or use “Choose a recording”.";
+  }
+
+  function cssVar(el, name, fallback) {
+    var v = getComputedStyle(el).getPropertyValue(name).trim();
+    return v || fallback;
+  }
+
+  /* ---------- live level meter ---------- */
+  function Meter(canvas, analyser) {
+    var ctx = canvas.getContext("2d"), data = new Uint8Array(analyser.fftSize), levels = [], raf = 0, last = 0;
+    var BAR = 3, GAP = 2;
+    function size() {
+      var dpr = window.devicePixelRatio || 1, w = canvas.clientWidth || 200, h = canvas.clientHeight || 40;
+      if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
+        canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+      }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { w: w, h: h };
+    }
+    function frame(t) {
+      raf = requestAnimationFrame(frame);
+      if (t - last < 50) return; last = t;
+      analyser.getByteTimeDomainData(data);
+      var sum = 0;
+      for (var i = 0; i < data.length; i++) { var v = (data[i] - 128) / 128; sum += v * v; }
+      var rms = Math.sqrt(sum / data.length);
+      levels.push(Math.min(1, rms * 4));
+      var d = size(), max = Math.floor(d.w / (BAR + GAP));
+      if (levels.length > max) levels.splice(0, levels.length - max);
+      ctx.clearRect(0, 0, d.w, d.h);
+      ctx.fillStyle = cssVar(canvas, "--error", "#b42318");
+      for (var j = 0; j < levels.length; j++) {
+        var bh = Math.max(2, levels[j] * d.h);
+        var x = d.w - (levels.length - j) * (BAR + GAP);
+        ctx.fillRect(x, (d.h - bh) / 2, BAR, bh);
+      }
+    }
+    this.start = function () { raf = requestAnimationFrame(frame); };
+    this.stop = function () { cancelAnimationFrame(raf); var d = size(); ctx.clearRect(0, 0, d.w, d.h); };
+  }
+
+  /* ---------- recording session ---------- */
+  async function start(opts) {
+    opts = opts || {};
+    var problem = supportProblem();
+    if (problem) throw { name: problem };
+
+    var stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+    var mime = pickMime();
+    var mr;
+    try { mr = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream); }
+    catch (e) { mr = new MediaRecorder(stream); }
+
+    var chunks = [], startedAt = Date.now(), timer = 0, meter = null, actx = null, stopped = false;
+    var resolveStop, rejectStop;
+    var finished = new Promise(function (res, rej) { resolveStop = res; rejectStop = rej; });
+
+    if (AC && opts.canvas) {
+      try {
+        actx = new AC();
+        var src = actx.createMediaStreamSource(stream), an = actx.createAnalyser();
+        an.fftSize = 1024; src.connect(an);
+        meter = new Meter(opts.canvas, an); meter.start();
+      } catch (e) { meter = null; }
+    }
+
+    function cleanup() {
+      clearInterval(timer);
+      if (meter) meter.stop();
+      if (actx) { try { actx.close(); } catch (e) {} }
+      stream.getTracks().forEach(function (t) { t.stop(); });
+    }
+
+    mr.ondataavailable = function (ev) { if (ev.data && ev.data.size) chunks.push(ev.data); };
+    mr.onstop = function () {
+      cleanup();
+      var type = (mr.mimeType || mime || "audio/webm").split(";")[0];
+      var blob = new Blob(chunks, { type: type });
+      if (!blob.size) rejectStop({ name: "empty" });
+      else resolveStop({ blob: blob, seconds: (Date.now() - startedAt) / 1000 });
+    };
+    mr.onerror = function (ev) { cleanup(); rejectStop(ev.error || { name: "RecorderError" }); };
+    stream.getTracks().forEach(function (t) { t.onended = function () { stop(); }; });
+
+    function stop() {
+      if (stopped) return finished;
+      stopped = true;
+      if (mr.state !== "inactive") mr.stop(); else cleanup();
+      return finished;
+    }
+
+    mr.start(250);
+    timer = setInterval(function () {
+      var s = (Date.now() - startedAt) / 1000;
+      if (opts.onTick) opts.onTick(s);
+      if (s >= MAX_SECONDS) { stop(); if (opts.onAutoStop) opts.onAutoStop(); }
+    }, 200);
+
+    return { stop: stop, finished: finished };
+  }
+
+  /* ---------- analysis: duration + waveform peaks ---------- */
+  function readBuffer(blob) {
+    if (blob.arrayBuffer) return blob.arrayBuffer();
+    return new Promise(function (res, rej) { var r = new FileReader(); r.onload = function () { res(r.result); }; r.onerror = function () { rej(r.error); }; r.readAsArrayBuffer(blob); });
+  }
+
+  function decode(ctx, buf) {
+    return new Promise(function (res, rej) {
+      var p = ctx.decodeAudioData(buf, res, rej);
+      if (p && p.then) p.then(res, rej);
+    });
+  }
+
+  function peaksFrom(audioBuffer) {
+    var ch = audioBuffer.getChannelData(0), n = ch.length, size = Math.max(1, Math.floor(n / PEAK_COUNT)), out = [], max = 0;
+    var step = Math.max(1, Math.floor(size / 400)); // sample within each bucket for speed
+    for (var i = 0; i < PEAK_COUNT; i++) {
+      var start = i * size, end = Math.min(n, start + size), m = 0;
+      for (var j = start; j < end; j += step) { var v = Math.abs(ch[j]); if (v > m) m = v; }
+      out.push(m); if (m > max) max = m;
+    }
+    return out.map(function (v) { return Math.round(Math.max(0.08, max ? v / max : 0) * 100) / 100; });
+  }
+
+  // Fallback when the browser can't decode the file: read duration from an <audio> element.
+  function durationViaElement(blob) {
+    return new Promise(function (resolve) {
+      var a = new Audio(), url = URL.createObjectURL(blob), done = false;
+      function finish(d) { if (done) return; done = true; URL.revokeObjectURL(url); resolve(isFinite(d) && d > 0 ? d : 0); }
+      a.preload = "metadata";
+      a.onloadedmetadata = function () {
+        if (isFinite(a.duration) && a.duration > 0) return finish(a.duration);
+        a.ontimeupdate = function () { a.ontimeupdate = null; finish(a.duration); };
+        a.currentTime = 1e7; // forces Chrome to compute the real duration of WebM files
+      };
+      a.onerror = function () { finish(0); };
+      setTimeout(function () { finish(a.duration); }, 4000);
+      a.src = url;
+    });
+  }
+
+  async function analyze(blob, fallbackSeconds) {
+    if (AC) {
+      var ctx = null;
+      try {
+        ctx = new AC();
+        var buf = await decode(ctx, await readBuffer(blob));
+        return { duration: buf.duration, peaks: peaksFrom(buf), decodable: true };
+      } catch (e) { /* fall through */ }
+      finally { if (ctx && ctx.close) { try { ctx.close(); } catch (e) {} } }
+    }
+    var d = await durationViaElement(blob);
+    return { duration: d || fallbackSeconds || 0, peaks: null, decodable: d > 0 };
+  }
+
+  window.MywordRecorder = { start: start, analyze: analyze, errorMessage: errorMessage, supportProblem: supportProblem, MAX_SECONDS: MAX_SECONDS };
+})();
+
+</script>
+<script>
+/* MYWORD speech — live speech-to-text with the browser's Web Speech API
+   (Chrome, Edge, Safari). Fills in the sentence while you record. */
+(function () {
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  function tidy(s) {
+    s = String(s || "").replace(/\s+/g, " ").trim();
+    if (!s) return s;
+    s = s.replace(/\bi\b/g, "I").replace(/\bi'(m|ve|ll|d)\b/g, "I'$1");
+    s = s.charAt(0).toUpperCase() + s.slice(1);
+    if (!/[.!?…]$/.test(s)) s += ".";
+    return s;
+  }
+
+  /**
+   * start({ lang, onText(text, isFinal), onError(code) }) -> { stop(): Promise<string> }
+   */
+  function start(opts) {
+    opts = opts || {};
+    if (!SR) return null;
+    var rec = new SR(), finals = "", interim = "", stopped = false, ended = false, resolveStop = null;
+    rec.lang = opts.lang || "en-US";
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.maxAlternatives = 1;
+
+    function text() { return (finals + " " + interim).replace(/\s+/g, " ").trim(); }
+
+    rec.onresult = function (ev) {
+      interim = "";
+      for (var i = ev.resultIndex; i < ev.results.length; i++) {
+        var r = ev.results[i], t = r[0] ? r[0].transcript : "";
+        if (r.isFinal) finals += " " + t; else interim += " " + t;
+      }
+      if (opts.onText) opts.onText(text(), false);
+    };
+    rec.onerror = function (ev) {
+      var code = ev.error || "error";
+      if (code === "no-speech" || code === "aborted") return; // keep listening
+      if (code === "not-allowed" || code === "service-not-allowed" || code === "audio-capture" || code === "language-not-supported") stopped = true;
+      if (opts.onError) opts.onError(code);
+    };
+    rec.onend = function () {
+      // Chrome ends recognition after a pause; restart until the recording stops.
+      if (!stopped) { try { rec.start(); return; } catch (e) { /* fall through */ } }
+      ended = true;
+      interim = "";
+      if (resolveStop) resolveStop(tidy(finals));
+    };
+    try { rec.start(); } catch (e) { return null; }
+
+    return {
+      stop: function () {
+        stopped = true;
+        return new Promise(function (resolve) {
+          if (ended) { resolve(tidy(finals)); return; }
+          resolveStop = resolve;
+          try { rec.stop(); } catch (e) { resolve(tidy(text())); }
+          // Don't wait forever for the last words.
+          setTimeout(function () { resolve(tidy(text())); }, 2000);
+        });
+      }
+    };
+  }
+
+  window.MywordSpeech = { supported: !!SR, start: start, tidy: tidy };
+})();
+
+</script>
+<script>
+/* MYWORD rules — extra checks for common learner mistakes that LanguageTool's free
+   server misses. Each rule is deliberately narrow: it only fires on clear patterns,
+   so a correct sentence is left alone. Results use LanguageTool's match shape. */
+(function () {
+  /* ---------- verb data ---------- */
+  var IRREGULAR = (
+    "arise arose arisen,be was been,bear bore born,beat beat beaten,become became become,begin began begun," +
+    "bend bent bent,bet bet bet,bite bit bitten,bleed bled bled,blow blew blown,break broke broken,bring brought brought," +
+    "build built built,buy bought bought,catch caught caught,choose chose chosen,come came come,cost cost cost,cut cut cut," +
+    "deal dealt dealt,dig dug dug,do did done,draw drew drawn,drink drank drunk,drive drove driven,eat ate eaten," +
+    "fall fell fallen,feed fed fed,feel felt felt,fight fought fought,find found found,fly flew flown,forget forgot forgotten," +
+    "forgive forgave forgiven,freeze froze frozen,get got gotten,give gave given,go went gone,grow grew grown,hang hung hung," +
+    "have had had,hear heard heard,hide hid hidden,hit hit hit,hold held held,hurt hurt hurt,keep kept kept,know knew known," +
+    "lay laid laid,lead led led,leave left left,lend lent lent,let let let,lose lost lost,make made made,mean meant meant," +
+    "meet met met,pay paid paid,put put put,quit quit quit,read read read,ride rode ridden,ring rang rung,rise rose risen," +
+    "run ran run,say said said,see saw seen,sell sold sold,send sent sent,set set set,shake shook shaken,shoot shot shot," +
+    "show showed shown,shut shut shut,sing sang sung,sink sank sunk,sit sat sat,sleep slept slept,speak spoke spoken," +
+    "spend spent spent,spread spread spread,stand stood stood,steal stole stolen,stick stuck stuck,swim swam swum," +
+    "sweep swept swept,take took taken,teach taught taught,tear tore torn,tell told told,think thought thought," +
+    "throw threw thrown,understand understood understood,wake woke woken,wear wore worn,win won won,write wrote written," +
+    "prefer preferred preferred,control controlled controlled,admit admitted admitted,occur occurred occurred," +
+    "travel traveled traveled,cancel canceled canceled,refer referred referred,lie lay lain"
+  ).split(",");
+  var REGULAR = (
+    "visit play watch listen work live study cook clean call ask answer walk talk start finish open close help like love " +
+    "want need try use wait stay arrive move change decide dance enjoy hate hope invite jump kiss laugh learn look miss " +
+    "order paint plan rain remember rent return shop smile snow stop climb carry cry worry marry fix wash brush happen " +
+    "explain prepare practice practise relax repeat rest share believe agree receive pass push pull fail fill follow " +
+    "offer pick print promise reach record reply save serve test thank touch train turn type vote wish add allow check " +
+    "chat collect compare complain cover cross deliver describe design discuss drop end enter expect film guess hug hurry " +
+    "improve include join kick knock mark mix notice own park phone post pray produce prove rush sail skate ski spell " +
+    "suggest surf text tour translate trust wonder email borrow celebrate cook dream burn earn graduate wake visit " +
+    "watch listen use bake order chat download upload install"
+  ).split(/\s+/);
+
+  var BASE = {}, PAST = {}, PART = {}, REG = {};
+  IRREGULAR.forEach(function (row) {
+    var p = row.split(" ");
+    BASE[p[0]] = { past: p[1], part: p[2] };
+    PAST[p[1]] = p[0];
+    PART[p[2]] = p[0];
+  });
+  REGULAR.forEach(function (w) { if (w) REG[w] = 1; });
+  PAST.got = "get";
+
+  function isVerb(w) { return !!(w && (BASE[w] || REG[w])); }
+  function pastOf(b) {
+    if (BASE[b]) return BASE[b].past;
+    if (/e$/.test(b)) return b + "d";
+    if (/[^aeiou]y$/.test(b)) return b.slice(0, -1) + "ied";
+    if (/^[^aeiou]*[aeiou][^aeiouwxy]$/.test(b)) return b + b.slice(-1) + "ed";
+    return b + "ed";
+  }
+  function partOf(b) { return BASE[b] ? BASE[b].part : pastOf(b); }
+  function thirdOf(b) {
+    if (b === "have") return "has";
+    if (b === "do") return "does";
+    if (b === "go") return "goes";
+    if (/(s|sh|ch|x|z|o)$/.test(b)) return b + "es";
+    if (/[^aeiou]y$/.test(b)) return b.slice(0, -1) + "ies";
+    return b + "s";
+  }
+  function baseFromThird(w) {
+    var special = { has: "have", does: "do", goes: "go" };
+    if (special[w]) return special[w];
+    var c = [];
+    if (/ies$/.test(w)) c.push(w.slice(0, -3) + "y");
+    if (/(sses|shes|ches|xes|zes|oes)$/.test(w)) c.push(w.slice(0, -2));
+    if (/s$/.test(w) && !/ss$/.test(w)) c.push(w.slice(0, -1));
+    for (var i = 0; i < c.length; i++) if (isVerb(c[i])) return c[i];
+    return null;
+  }
+  function isPastForm(w) { return !!PAST[w] || (/ed$/.test(w) && w.length > 3); }
+
+  /* ---------- word classes ---------- */
+  function set(s) { var o = {}; s.split(" ").forEach(function (w) { o[w] = 1; }); return o; }
+  var PRON = { i: "1s", you: "2", we: "1p", they: "3p", he: "3s", she: "3s", it: "3s" };
+  var NOMINATIVE = set("i we they he she");
+  var DET = set("my your his her our their the this that these those");
+  var ADV = set("also really just then finally first even only still often always usually never sometimes already");
+  var CONJ = set("and but so because when then after before that if while as");
+  var MODAL = set("will would can could should must may might shall");
+  var BEFORE_SUBJ_SKIP = set("did didn't do does don't doesn't will would can could should must may might shall let lets make makes made help helps helped saw see sees watch watches watched hear hears heard feel feels felt have has had are is was were am to");
+  var NOT_NOUN = set("and or but so the a an to of in on at for with from by not no very too");
+  var PLURAL_NOUNS = set("people children men women police teeth feet mice");
+  var SINGULAR_S = set("news physics mathematics maths economics bus class boss glass address business series species");
+  var TIME_WORDS = set("yesterday ago night week weekend month year summer winter spring autumn fall time monday tuesday wednesday thursday friday saturday sunday january february march april may june july august september october november december morning");
+  var DURATIVE = set("live work know study teach want like love wait stay play have own use learn be");
+  var QUANT = set("many several few two three four five six seven eight nine ten eleven twelve lots");
+
+  var MONTHS_DAYS = "monday|tuesday|wednesday|thursday|friday|saturday|sunday|january|february|march|april|may|june|july|august|september|october|november|december";
+  var PAST_MARKER = new RegExp("\\b(the day before yesterday|yesterday|\\w+ (?:days?|weeks?|months?|years?|hours?|minutes?) ago|ago|last (?:night|week|weekend|month|year|summer|winter|spring|autumn|fall|time|" + MONTHS_DAYS + ")|in (?:1[89]\\d\\d|20\\d\\d))\\b", "i");
+  var FUTURE_MARKER = /\b(tomorrow|will|'ll|next|going to|soon|tonight)\b/i;
+  var SINCE = /\bsince\b/i;
+  var FOR_DURATION = /\bfor (?:\d+|a long time|a while|many|several|a few|two|three|four|five|six|seven|eight|nine|ten|ages|years|months|weeks|days)\b/i;
+
+  function pastMarker(sentence) {
+    var m = sentence.match(PAST_MARKER);
+    if (!m) return null;
+    var y = m[0].match(/\d{4}/);
+    if (y && +y[0] >= new Date().getFullYear()) return null;
+    return m[0];
+  }
+
+  /* ---------- tokens ---------- */
+  function tokenize(text) {
+    var re = /[A-Za-z]+(?:['’][A-Za-z]+)?|\d+|[^\sA-Za-z\d]/g, m, out = [];
+    while ((m = re.exec(text))) {
+      var t = m[0];
+      out.push({ t: t, l: t.toLowerCase().replace(/’/g, "'"), s: m.index, e: m.index + t.length, word: /^[A-Za-z]/.test(t) });
+    }
+    return out;
+  }
+  function sentences(toks) {
+    var out = [], cur = [];
+    toks.forEach(function (k) { cur.push(k); if (/^[.!?;]$/.test(k.t)) { out.push(cur); cur = []; } });
+    if (cur.length) out.push(cur);
+    return out;
+  }
+  function capLike(orig, rep) { return /^[A-Z]/.test(orig) ? rep.charAt(0).toUpperCase() + rep.slice(1) : rep; }
+
+  function clauseStart(toks, i) {
+    var p = toks[i - 1];
+    return !p || p.t === "," || CONJ[p.l] || TIME_WORDS[p.l] || /^\d+$/.test(p.t);
+  }
+
+  // Subject at token i: a pronoun, or determiner + noun at the start of a clause.
+  function subjectAt(toks, i) {
+    var k = toks[i];
+    if (!k || !k.word) return null;
+    var prev = toks[i - 1];
+    if (prev && BEFORE_SUBJ_SKIP[prev.l]) return null;
+    if (PRON[k.l]) {
+      if (!NOMINATIVE[k.l] && !clauseStart(toks, i)) return null; // "you"/"it" can be objects
+      return { start: i, end: i + 1, person: PRON[k.l], text: k.t, noun: false };
+    }
+    if (DET[k.l] && clauseStart(toks, i)) {
+      var n = toks[i + 1];
+      if (!n || !n.word || NOT_NOUN[n.l] || DET[n.l] || ADV[n.l] || PRON[n.l] || MODAL[n.l] || isVerb(n.l) || /ing$|ly$/.test(n.l)) return null;
+      var plural = k.l === "these" || k.l === "those" || PLURAL_NOUNS[n.l] || (/s$/.test(n.l) && !/(ss|us|is)$/.test(n.l) && !SINGULAR_S[n.l]);
+      return { start: i, end: i + 2, person: plural ? "3p" : "3s", text: k.t + " " + n.t, noun: true };
+    }
+    return null;
+  }
+  function skipAdverbs(toks, j) { while (toks[j] && ADV[toks[j].l]) j++; return j; }
+
+  function match(tok, toTok, rep, message, id) {
+    return { offset: tok.s, length: toTok.e - tok.s, message: message, replacements: [{ value: rep }], rule: { id: "MYWORD_" + id, issueType: "grammar" }, local: true };
+  }
+
+  /* ---------- rules ---------- */
+  function rulePastTime(toks, sentenceText, out) {
+    var marker = pastMarker(sentenceText);
+    if (!marker || FUTURE_MARKER.test(sentenceText)) return;
+    var sawPast = false;
+    for (var i = 0; i < toks.length; i++) {
+      var k = toks[i];
+      // "…and I cry": a new clause joined by and/but/then is about the same past time.
+      if (k.l === "and" || k.l === "but" || k.l === "then") { sawPast = false; continue; }
+      // Contractions: "I'm tired yesterday" -> "I was tired yesterday"
+      var c = k.l.match(/^(i|you|we|they|he|she)'(m|re)$/);
+      if (c && !sawPast) {
+        var be = (c[1] === "i" || c[1] === "he" || c[1] === "she") ? "was" : "were";
+        out.push(match(k, k, k.t.replace(/['’](m|re)$/i, "") + " " + be, "Use “" + be + "” (past) because of “" + marker + "”.", "PAST_TIME"));
+        sawPast = true; continue;
+      }
+      var subj = subjectAt(toks, i);
+      if (!subj) { if (k.word && isPastForm(k.l) && !BASE[k.l]) sawPast = true; continue; }
+      if (sawPast) break; // an earlier past verb: the rest may be reported speech, leave it
+      var j = skipAdverbs(toks, subj.end), v = toks[j];
+      if (!v || !v.word) continue;
+      var w = v.l, rep = null;
+      if (w === "don't" || w === "doesn't") rep = "didn't";
+      else if ((w === "do" || w === "does") && toks[j + 1] && toks[j + 1].l === "not") rep = "did";
+      else if (w === "am" || w === "is") rep = "was";
+      else if (w === "are") rep = (subj.person === "3s" || subj.person === "1s") ? "was" : "were";
+      else if (MODAL[w] || isPastForm(w) || w === "was" || w === "were") { sawPast = true; continue; }
+      else {
+        var base = subj.person === "3s" ? (baseFromThird(w) || w) : w;
+        if (!isVerb(base) || base === "be") continue;
+        if (BASE[base] && BASE[base].past === base) continue; // put/cut/read: can't tell
+        if (base === "have" && toks[j + 1] && (PART[toks[j + 1].l] || isPastForm(toks[j + 1].l))) continue; // perfect: other rule
+        rep = pastOf(base);
+      }
+      if (rep) {
+        out.push(match(v, v, capLike(v.t, rep), "Use the past tense “" + rep + "” because of “" + marker + "”.", "PAST_TIME"));
+        sawPast = true;
+      }
+    }
+  }
+
+  function rulePerfectWithFinishedTime(toks, sentenceText, out) {
+    var marker = pastMarker(sentenceText);
+    if (!marker || SINCE.test(sentenceText) || FOR_DURATION.test(sentenceText)) return;
+    for (var i = 0; i < toks.length; i++) {
+      var k = toks[i], p = toks[i + 1];
+      var contracted = k.l.match(/^(i|you|we|they)'ve$/);
+      if (!contracted && !(i > 0 && (k.l === "have" || k.l === "has"))) continue;
+      if (!p || !p.word) continue;
+      var pw = p.l, past = null;
+      if (!contracted) {
+        var subj = toks[i - 1];
+        if (!subj || !(PRON[subj.l] || (subj.word && !BEFORE_SUBJ_SKIP[subj.l] && !NOT_NOUN[subj.l]))) continue;
+      }
+      if (pw === "been") {
+        var who = contracted ? contracted[1] : toks[i - 1].l;
+        past = (who === "i" || k.l === "has") ? "was" : "were";
+      } else if (PART[pw] && BASE[PART[pw]]) past = BASE[PART[pw]].past;
+      else if (PAST[pw]) past = pw;                       // "have went"
+      else if (/ed$/.test(pw) && pw.length > 3) past = pw;
+      if (!past) continue;
+      var rep = contracted ? k.t.replace(/['’]ve$/i, "") + " " + past : past;
+      var orig = contracted ? k.t + " " + p.t : k.t + " " + p.t;
+      out.push(match(k, p, rep, "Use the past simple “" + past + "”, not “" + orig + "”, with a finished time like “" + marker + "”.", "PERFECT_FINISHED_TIME"));
+      i++;
+    }
+  }
+
+  function ruleSince(toks, sentenceText, out) {
+    var sinceIdx = -1;
+    for (var x = 0; x < toks.length; x++) if (toks[x].l === "since" || toks[x].l === "for") { sinceIdx = x; break; }
+    if (!SINCE.test(sentenceText) && !FOR_DURATION.test(sentenceText)) return;
+    if (sinceIdx < 0) return;
+    var word = SINCE.test(sentenceText) ? "since" : "for";
+    for (var i = 0; i < sinceIdx; i++) {
+      var k = toks[i];
+      var c = k.l.match(/^(i|you|we|they|he|she)'(m|re|s)$/);
+      var subj = c ? { end: i + 1, person: (c[1] === "he" || c[1] === "she") ? "3s" : "x", text: k.t } : subjectAt(toks, i);
+      if (!subj) continue;
+      var have = subj.person === "3s" ? "has" : "have";
+      var j = skipAdverbs(toks, subj.end), v = toks[j];
+      if (c) {
+        if (c[2] === "s" && !(toks[j] && /ing$/.test(toks[j].l))) return; // "he's" might be "he has"
+        var subjWord = k.t.replace(/['’](m|re|s)$/i, "");
+        var nxt = toks[j];
+        if (nxt && /ing$/.test(nxt.l) && nxt.l.length > 4) {
+          out.push(match(k, nxt, subjWord + " " + have + " been " + nxt.t, "With “" + word + "”, use the present perfect: “" + have + " been " + nxt.t + "”.", "SINCE_PERFECT"));
+        } else {
+          out.push(match(k, k, subjWord + " " + have + " been", "With “" + word + "”, use the present perfect: “" + have + " been”.", "SINCE_PERFECT"));
+        }
+        return;
+      }
+      if (!v || !v.word || j >= sinceIdx) return;
+      var w = v.l;
+      if (w === "am" || w === "is" || w === "are") {
+        var n = toks[j + 1];
+        if (n && /ing$/.test(n.l) && n.l.length > 4) out.push(match(v, n, have + " been " + n.t, "With “" + word + "”, use the present perfect: “" + have + " been " + n.t + "”.", "SINCE_PERFECT"));
+        else out.push(match(v, v, have + " been", "With “" + word + "”, use the present perfect: “" + have + " been”.", "SINCE_PERFECT"));
+        return;
+      }
+      var base = subj.person === "3s" ? (baseFromThird(w) || w) : w;
+      if (!DURATIVE[base] || !isVerb(base)) return;
+      if ((w === "have" || w === "has") && toks[j + 1] && (PART[toks[j + 1].l] || isPastForm(toks[j + 1].l) || toks[j + 1].l === "been")) return; // already perfect
+      var rep = have + " " + partOf(base);
+      out.push(match(v, v, rep, "With “" + word + "”, use the present perfect: “" + rep + "”.", "SINCE_PERFECT"));
+      return;
+    }
+  }
+
+  function ruleNounAgreement(toks, sentenceText, out) {
+    var hasPast = !!pastMarker(sentenceText);
+    for (var i = 0; i < toks.length; i++) {
+      var subj = subjectAt(toks, i);
+      if (!subj || !subj.noun) continue;
+      var j = skipAdverbs(toks, subj.end), v = toks[j];
+      if (!v || !v.word) continue;
+      var w = v.l, rep = null;
+      if (subj.person === "3s") {
+        var fix = { have: "has", do: "does", "don't": "doesn't", are: "is", were: "was" };
+        if (fix[w]) rep = fix[w];
+        else if (!hasPast && isVerb(w) && !/s$/.test(w)) {
+          var prev = toks[j - 1];
+          if (!(prev && (MODAL[prev.l] || prev.l === "to"))) rep = thirdOf(w);
+        }
+      } else {
+        var fixp = { has: "have", does: "do", "doesn't": "don't", is: "are", was: "were" };
+        if (fixp[w]) rep = fixp[w];
+        else if (/s$/.test(w)) { var b = baseFromThird(w); if (b && b !== "be") rep = b; }
+      }
+      if (rep) {
+        var why = subj.person === "3s" ? "“" + subj.text + "” is one person or thing, so use “" + rep + "”." : "“" + subj.text + "” is more than one, so use “" + rep + "”.";
+        out.push(match(v, v, capLike(v.t, rep), why, "NOUN_AGREEMENT"));
+      }
+      i = j;
+    }
+  }
+
+  function ruleThereIs(toks, sentenceText, out) {
+    for (var i = 0; i < toks.length; i++) {
+      var k = toks[i];
+      var single = k.l === "there's";
+      if (k.l !== "there" && !single) continue;
+      var v = single ? k : toks[i + 1];
+      if (!v || !(single || v.l === "is" || v.l === "was")) continue;
+      var q = toks[single ? i + 1 : i + 2], q2 = toks[single ? i + 2 : i + 3];
+      if (!q) continue;
+      var plural = QUANT[q.l] || /^\d+$/.test(q.t) && q.t !== "1" || (q.l === "a" && q2 && (q2.l === "lot" || q2.l === "few")) || (q.l === "some" && q2 && /s$/.test(q2.l) && !/ss$/.test(q2.l));
+      if (!plural) continue;
+      var be = (single || v.l === "is") ? "are" : "were";
+      var rep = single ? capLike(k.t, "there are") : be;
+      out.push(match(v, v, rep, "Use “" + be + "” because you are talking about more than one thing.", "THERE_ARE"));
+    }
+  }
+
+  function find(text) {
+    var toks = tokenize(String(text || "")), out = [];
+    sentences(toks).forEach(function (st) {
+      if (!st.length) return;
+      var sText = text.slice(st[0].s, st[st.length - 1].e);
+      rulePerfectWithFinishedTime(st, sText, out);
+      rulePastTime(st, sText, out);
+      ruleSince(st, sText, out);
+      ruleNounAgreement(st, sText, out);
+      ruleThereIs(st, sText, out);
+    });
+    // keep the first match when two overlap
+    out.sort(function (a, b) { return a.offset - b.offset; });
+    var kept = [], end = -1;
+    out.forEach(function (m) { if (m.offset >= end) { kept.push(m); end = m.offset + m.length; } });
+    return kept;
+  }
+
+  window.MywordRules = { find: find };
+})();
+
+</script>
+<script>
+/* MYWORD checker — free grammar and spelling check with LanguageTool's public API
+   (https://languagetool.org). No account or key needed. Sentences are sent to languagetool.org. */
+(function () {
+  var ENDPOINT = "https://api.languagetool.org/v2/check";
+  var MAX_CHARS = 1500;
+
+  function err(code, message) { return { code: code, message: message }; }
+
+  function distance(a, b) {
+    a = a.toLowerCase(); b = b.toLowerCase();
+    var prev = [], cur, i, j;
+    for (j = 0; j <= b.length; j++) prev.push(j);
+    for (i = 1; i <= a.length; i++) {
+      cur = [i];
+      for (j = 1; j <= b.length; j++) cur.push(Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)));
+      prev = cur;
+    }
+    return prev[b.length];
+  }
+
+  // Of the checker's top suggestions, take the one closest to what the learner wrote
+  // ("brother" -> "brothers", not "brethren"); ties keep the checker's order.
+  function bestReplacement(original, reps, message) {
+    if (!reps || !reps.length) return null;
+    // If the checker's own explanation names one of its suggestions ("Did you mean “children”…"), use that one.
+    var named = reps.slice(0, 5).filter(function (r) { return r.value && message && message.indexOf("“" + r.value + "”") >= 0; });
+    if (named.length) return named[0].value;
+    var best = reps[0].value, bestD = distance(original, best);
+    reps.slice(1, 5).forEach(function (r) { var d = distance(original, r.value); if (d < bestD) { best = r.value; bestD = d; } });
+    return best;
+  }
+
+  /**
+   * check(text, { spoken }) -> Promise<{ correct, correction, explanation, issues }>
+   *  correct     — no problems found
+   *  correction  — the sentence with the suggested fixes applied ("" when nothing could be fixed)
+   *  explanation — short notes, one per problem
+   */
+  async function check(text, opts) {
+    opts = opts || {};
+    text = String(text || "").trim();
+    if (!text) throw err("empty", "Type a sentence first.");
+    if (text.length > MAX_CHARS) throw err("too_long", "That is too long to check at once. Keep it under " + MAX_CHARS + " characters.");
+
+    // One fix can reveal the next ("she dont" -> "she don't" -> "she doesn't"),
+    // so check the corrected sentence again, up to 3 passes in total.
+    var current = text, notes = [], issues = [], seen = {}, found = false, offline = false;
+    for (var pass = 0; pass < 3; pass++) {
+      var r;
+      try { r = await checkOnce(current, opts); }
+      catch (e) { if (pass === 0) throw e; break; } // keep what earlier passes found
+      if (r.offline) offline = true;
+      if (!r.issues.length) break;
+      found = true;
+      r.notes.forEach(function (n) { if (!seen[n]) { seen[n] = 1; notes.push(n); } });
+      issues = issues.concat(r.issues);
+      if (r.fixed === current) break; // nothing more it can fix automatically
+      current = r.fixed;
+    }
+    if (offline) notes.push("(The online checker couldn't be reached, so only the basic checks ran.)");
+    if (!found) return { correct: true, correction: "", explanation: "Well done!", issues: [] };
+    return { correct: false, correction: current !== text ? current : "", explanation: notes.join(" "), issues: issues };
+  }
+
+  // One pass: MYWORD's own rules (tenses, agreement, "since"…) plus LanguageTool.
+  // Where both flag the same words, the more specific MYWORD rule wins.
+  async function checkOnce(text, opts) {
+    var local = window.MywordRules ? window.MywordRules.find(text) : [];
+    var lt = [], ltError = null;
+    try { lt = await fetchLanguageTool(text, opts); } catch (e) { ltError = e; }
+    if (ltError && !local.length) throw ltError;
+    lt = lt.filter(function (m) {
+      return !local.some(function (l) { return m.offset < l.offset + l.length && l.offset < m.offset + m.length; });
+    });
+    var r = buildResult(text, local.concat(lt));
+    r.offline = !!ltError;
+    return r;
+  }
+
+  async function fetchLanguageTool(text, opts) {
+    var body = new URLSearchParams();
+    body.set("text", text);
+    body.set("language", "en-US");
+    body.set("level", "picky");
+    // Speech-to-text leaves out capitals and punctuation, so don't count those as mistakes.
+    if (opts.spoken) {
+      body.set("disabledCategories", "CASING,PUNCTUATION,TYPOGRAPHY");
+      body.set("disabledRules", "I_LOWERCASE,UPPERCASE_SENTENCE_START");
+    }
+
+    var res;
+    try {
+      res = await fetch(ENDPOINT, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded", "Accept": "application/json" }, body: body.toString() });
+    } catch (e) {
+      throw err("network", "Couldn't reach the grammar checker. Check your internet connection and try again.");
+    }
+    if (res.status === 429) throw err("rate_limited", "Too many checks in a short time. Wait a minute and try again.");
+    if (!res.ok) throw err("http_" + res.status, "The grammar checker is not available right now (" + res.status + "). Try again later.");
+    var data;
+    try { data = await res.json(); } catch (e) { throw err("bad_json", "The grammar checker sent an answer that couldn't be read. Try again."); }
+
+    return (data.matches || []).filter(function (m) {
+      var t = m.rule && m.rule.issueType;
+      return t !== "locale-violation"; // don't flag British spellings
+    });
+  }
+
+  function buildResult(text, matches) {
+    matches = matches.slice().sort(function (a, b) { return a.offset - b.offset; });
+    var out = "", last = 0, notes = [], issues = [], seen = {};
+    matches.forEach(function (m) {
+      var from = m.offset, to = m.offset + m.length;
+      var original = text.slice(from, to);
+      var msg = String(m.message || m.shortMessage || (m.rule && m.rule.description) || "Possible mistake.").replace(/\s+/g, " ").trim();
+      var rep = bestReplacement(original, m.replacements, msg);
+      var overlaps = from < last;
+      if (!overlaps && rep != null) { out += text.slice(last, from) + rep; last = to; }
+      var note = (rep != null && original ? "“" + original + "” → “" + rep + "”: " : original ? "“" + original + "”: " : "") + msg;
+      if (!seen[note]) { seen[note] = 1; notes.push(note); }
+      issues.push({ from: from, to: to, original: original, replacement: rep, message: msg });
+    });
+    out += text.slice(last);
+
+    return { fixed: out, notes: notes, issues: issues };
+  }
+
+  window.MywordChecker = { check: check, name: "LanguageTool" };
+})();
+
+</script>
+<script>
+/* MYWORD player — a voice-recorder style player: play/pause, waveform you can tap or drag
+   to seek, time readout, playback speed and download. Only one player plays at a time. */
+(function () {
+  var SPEEDS = [1, 0.75, 1.25];
+  var current = null; // the player that is playing now
+
+  var ICON = {
+    play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5z"/></svg>',
+    pause: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4.5" height="14" rx="1.2"/><rect x="13.5" y="5" width="4.5" height="14" rx="1.2"/></svg>',
+    download: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>'
+  };
+
+  function fmt(s) {
+    s = Math.max(0, Math.floor(s || 0));
+    return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+  }
+
+  function extFor(type) {
+    type = (type || "").toLowerCase();
+    if (type.indexOf("mp4") >= 0 || type.indexOf("m4a") >= 0 || type.indexOf("aac") >= 0) return "m4a";
+    if (type.indexOf("ogg") >= 0) return "ogg";
+    if (type.indexOf("mpeg") >= 0 || type.indexOf("mp3") >= 0) return "mp3";
+    if (type.indexOf("wav") >= 0) return "wav";
+    return "webm";
+  }
+
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+
+  /**
+   * create({ blob, duration, peaks, label, fileName })
+   * returns { el, play, pause, destroy }
+   */
+  function create(opts) {
+    var blob = opts.blob, duration = opts.duration || 0, peaks = opts.peaks;
+    if (!peaks || !peaks.length) { peaks = []; for (var k = 0; k < 64; k++) peaks.push(0.3); }
+    var url = null, audio = null, pos = 0, rate = 1, raf = 0, playing = false, destroyed = false;
+
+    var root = el("div", "player");
+    var playBtn = el("button", "play", ICON.play);
+    playBtn.type = "button";
+    playBtn.setAttribute("aria-label", "Play " + (opts.label || "recording"));
+    var body = el("div", "p-body");
+    var wave = el("div", "wave");
+    wave.tabIndex = 0;
+    wave.setAttribute("role", "slider");
+    wave.setAttribute("aria-label", "Position in " + (opts.label || "recording"));
+    wave.setAttribute("aria-valuemin", "0");
+    var bars = peaks.map(function (p) { return '<i style="height:' + Math.round(p * 100) + '%"></i>'; }).join("");
+    var base = el("div", "bars", bars), played = el("div", "bars played", bars);
+    played.setAttribute("aria-hidden", "true"); base.setAttribute("aria-hidden", "true");
+    wave.appendChild(base); wave.appendChild(played);
+    var foot = el("div", "p-foot");
+    var time = el("span", "p-time");
+    var speedBtn = el("button", "icon-btn speed", "1×");
+    speedBtn.type = "button";
+    speedBtn.setAttribute("aria-label", "Playback speed: 1×");
+    speedBtn.title = "Playback speed";
+    var dl = el("a", "icon-btn", ICON.download + '<span class="sr">Download recording</span>');
+    dl.title = "Download recording";
+    dl.download = (opts.fileName || "myword-recording") + "." + extFor(blob.type);
+    dl.href = "#";
+    foot.appendChild(time); foot.appendChild(speedBtn); foot.appendChild(dl);
+    body.appendChild(wave); body.appendChild(foot);
+    root.appendChild(playBtn); root.appendChild(body);
+
+    function getUrl() { if (!url) url = URL.createObjectURL(blob); return url; }
+
+    function dur() {
+      if (audio && isFinite(audio.duration) && audio.duration > 0) return audio.duration;
+      return duration;
+    }
+
+    function paint() {
+      var d = dur(), p = d ? Math.min(1, pos / d) : 0;
+      played.style.setProperty("--p", (p * 100).toFixed(2) + "%");
+      time.textContent = fmt(pos) + " / " + fmt(d);
+      wave.setAttribute("aria-valuemax", String(Math.round(d)));
+      wave.setAttribute("aria-valuenow", String(Math.round(pos)));
+      wave.setAttribute("aria-valuetext", fmt(pos) + " of " + fmt(d));
+    }
+
+    function loop() {
+      if (audio) pos = audio.currentTime;
+      paint();
+      if (playing) raf = requestAnimationFrame(loop);
+    }
+
+    function setPlaying(v) {
+      playing = v;
+      root.classList.toggle("playing", v);
+      playBtn.innerHTML = v ? ICON.pause : ICON.play;
+      playBtn.setAttribute("aria-label", (v ? "Pause " : "Play ") + (opts.label || "recording"));
+      cancelAnimationFrame(raf);
+      if (v) raf = requestAnimationFrame(loop); else paint();
+    }
+
+    function ensureAudio() {
+      if (audio) return audio;
+      audio = new Audio();
+      audio.preload = "auto";
+      audio.src = getUrl();
+      audio.playbackRate = rate;
+      if ("preservesPitch" in audio) audio.preservesPitch = true;
+      audio.addEventListener("ended", function () { setPlaying(false); pos = 0; try { audio.currentTime = 0; } catch (e) {} if (current === api) current = null; paint(); });
+      audio.addEventListener("pause", function () { if (playing) setPlaying(false); });
+      audio.addEventListener("loadedmetadata", paint);
+      audio.addEventListener("durationchange", paint);
+      return audio;
+    }
+
+    function play() {
+      if (destroyed) return;
+      if (current && current !== api) current.pause();
+      current = api;
+      var a = ensureAudio();
+      var d = dur();
+      if (d && pos >= d - 0.05) pos = 0;
+      try { if (Math.abs(a.currentTime - pos) > 0.05) a.currentTime = pos; } catch (e) {}
+      a.playbackRate = rate;
+      setPlaying(true);
+      var pr = a.play();
+      if (pr && pr.catch) pr.catch(function () { setPlaying(false); });
+    }
+
+    function pause() {
+      if (audio && !audio.paused) audio.pause();
+      if (audio) pos = audio.currentTime;
+      if (current === api) current = null;
+      setPlaying(false);
+    }
+
+    function seekTo(sec) {
+      var d = dur();
+      pos = Math.max(0, Math.min(d || 0, sec));
+      if (audio) { try { audio.currentTime = pos; } catch (e) {} }
+      paint();
+    }
+
+    function seekFromEvent(ev) {
+      var r = wave.getBoundingClientRect();
+      var x = Math.max(0, Math.min(r.width, ev.clientX - r.left));
+      seekTo(r.width ? (x / r.width) * dur() : 0);
+    }
+
+    playBtn.addEventListener("click", function () { playing ? pause() : play(); });
+
+    var dragging = false;
+    wave.addEventListener("pointerdown", function (ev) {
+      dragging = true;
+      try { wave.setPointerCapture(ev.pointerId); } catch (e) {}
+      seekFromEvent(ev);
+    });
+    wave.addEventListener("pointermove", function (ev) { if (dragging) seekFromEvent(ev); });
+    function endDrag() { dragging = false; }
+    wave.addEventListener("pointerup", endDrag);
+    wave.addEventListener("pointercancel", endDrag);
+    wave.addEventListener("keydown", function (ev) {
+      var k = ev.key;
+      if (k === "ArrowRight" || k === "ArrowUp") { seekTo(pos + 2); ev.preventDefault(); }
+      else if (k === "ArrowLeft" || k === "ArrowDown") { seekTo(pos - 2); ev.preventDefault(); }
+      else if (k === "Home") { seekTo(0); ev.preventDefault(); }
+      else if (k === "End") { seekTo(dur()); ev.preventDefault(); }
+      else if (k === " " || k === "Enter") { playing ? pause() : play(); ev.preventDefault(); }
+    });
+
+    speedBtn.addEventListener("click", function () {
+      rate = SPEEDS[(SPEEDS.indexOf(rate) + 1) % SPEEDS.length];
+      speedBtn.textContent = rate + "×";
+      speedBtn.setAttribute("aria-label", "Playback speed: " + rate + "×");
+      if (audio) audio.playbackRate = rate;
+    });
+
+    dl.addEventListener("click", function () { dl.href = getUrl(); });
+
+    function destroy() {
+      destroyed = true;
+      cancelAnimationFrame(raf);
+      if (audio) { try { audio.pause(); audio.removeAttribute("src"); audio.load(); } catch (e) {} }
+      if (current === api) current = null;
+      if (url) { URL.revokeObjectURL(url); url = null; }
+      audio = null;
+    }
+
+    var api = { el: root, play: play, pause: pause, destroy: destroy, blob: blob };
+    paint();
+    return api;
+  }
+
+  window.MywordPlayer = { create: create, fmt: fmt, pauseAll: function () { if (current) current.pause(); } };
+})();
+
+</script>
+<script>
+/* MYWORD Notebook — composer (type or record), grammar check, saved list, groups, colors, search and backup. */
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var store = window.MywordStore, Rec = window.MywordRecorder, Player = window.MywordPlayer, Speech = window.MywordSpeech;
+
+  var items = [], groups = [], loaded = false;
+  var f = { q: "", mark: "all", tag: null, group: rememberedGroup() }; // group: null = all, "none" = no group, or a group id
+  var form = { mode: "type", status: "none", starred: false, category: null, group: null, editingId: null, audio: null, audioChanged: false, explanation: "", checkedText: null, textFromSpeech: false };
+  var confirmDel = null, colorMenu = null, groupMenu = null; // id of the card whose color / group menu is open
+  var groupEdit = null; // "rename" | "delete" while the selected group's bar is in that mode
+
+  function rememberedGroup() { try { return localStorage.getItem("myword.group") || null; } catch (e) { return null; } }
+  function rememberGroup(g) { try { if (g) localStorage.setItem("myword.group", g); else localStorage.removeItem("myword.group"); } catch (e) {} }
+
+  /* Color categories for saved sentences. */
+  var CATEGORIES = [
+    { id: "blue", label: "Everyday conversation" },
+    { id: "green", label: "Job interview" },
+    { id: "orange", label: "Questions" },
+    { id: "purple", label: "Work & business" },
+    { id: "pink", label: "Friends & family" },
+    { id: "teal", label: "Study & school" }
+  ];
+  function categoryOf(id) { for (var i = 0; i < CATEGORIES.length; i++) if (CATEGORIES[i].id === id) return CATEGORIES[i]; return null; }
+  var session = null, starting = false, speech = null; // active recording + transcription
+  var previewPlayer = null;                            // composer preview
+  var players = new Map();                             // id -> { key, player } for saved sentences
+
+  var MIC_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+  var DEFAULT_AUDIO_MSG = "Press Record and say your sentence in English.";
+  var HINT = {
+    type: "Type your sentence in English.",
+    record: Speech.supported
+      ? "Your words appear here while you speak. Fix anything it heard wrong."
+      : "This browser can't turn speech into text, so type what you said here. (Chrome, Edge and Safari can do it for you.)",
+    listening: "Listening… your words appear here as you speak."
+  };
+
+  /* ---------- helpers ---------- */
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function reEsc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+  function hl(text) {
+    var q = f.q.trim();
+    text = String(text || "");
+    if (!q) return esc(text);
+    var re = new RegExp("(" + reEsc(q) + ")", "gi"), out = "", last = 0, m;
+    while ((m = re.exec(text))) { out += esc(text.slice(last, m.index)) + "<mark>" + esc(m[0]) + "</mark>"; last = m.index + m[0].length; if (!m[0].length) re.lastIndex++; }
+    return out + esc(text.slice(last));
+  }
+  function parseTags(s) { var seen = {}; return s.split(",").map(function (t) { return t.trim().toLowerCase(); }).filter(function (t) { if (!t || seen[t]) return false; seen[t] = 1; return true; }); }
+  function fmtDate(ms) { try { return new Date(ms).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }); } catch (e) { return ""; } }
+  function fileStamp(ms) { var d = new Date(ms || Date.now()); function p(n) { return String(n).padStart(2, "0"); } return "myword-" + d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) + "-" + p(d.getHours()) + p(d.getMinutes()); }
+  function setMsg(id, t, cls) { var m = $(id); m.textContent = t || ""; m.className = "msg" + (cls ? " " + cls : ""); }
+  function audioMsg(t, cls) { setMsg("audio-msg", t, cls); }
+  function saveMsg(t, cls) { setMsg("save-msg", t, cls); }
+  function aiMsg(t, cls) { setMsg("ai-msg", t, cls); }
+
+  /* Word-level diff so learners can see exactly what changed. */
+  function diffWords(a, b) {
+    var A = String(a || "").split(/\s+/).filter(Boolean), B = String(b || "").split(/\s+/).filter(Boolean);
+    var n = A.length, m = B.length, i, j, L = [];
+    if (n * m > 40000) return [{ t: "del", w: A.join(" ") }, { t: "ins", w: B.join(" ") }];
+    for (i = 0; i <= n; i++) { L.push(new Array(m + 1).fill(0)); }
+    for (i = n - 1; i >= 0; i--) for (j = m - 1; j >= 0; j--) L[i][j] = A[i] === B[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+    var ops = [];
+    i = 0; j = 0;
+    while (i < n && j < m) {
+      if (A[i] === B[j]) { ops.push({ t: "eq", w: B[j] }); i++; j++; }
+      else if (L[i + 1][j] >= L[i][j + 1]) { ops.push({ t: "del", w: A[i] }); i++; }
+      else { ops.push({ t: "ins", w: B[j] }); j++; }
+    }
+    while (i < n) ops.push({ t: "del", w: A[i++] });
+    while (j < m) ops.push({ t: "ins", w: B[j++] });
+    return ops;
+  }
+  function diffHtml(orig, corr, showDeleted) {
+    return diffWords(orig, corr).filter(function (o) { return showDeleted || o.t !== "del"; }).map(function (o) {
+      return o.t === "eq" ? esc(o.w) : o.t === "ins" ? '<ins class="fix">' + esc(o.w) + "</ins>" : '<del class="fix">' + esc(o.w) + "</del>";
+    }).join(" ");
+  }
+
+  /* ---------- composer: type / record tabs ---------- */
+  function setMode(mode) {
+    if (session && mode === "type") return; // finish the recording first
+    form.mode = mode;
+    $("tab-type").setAttribute("aria-selected", String(mode === "type"));
+    $("tab-record").setAttribute("aria-selected", String(mode === "record"));
+    $("record-panel").hidden = mode !== "record";
+    $("text").placeholder = mode === "record" ? (Speech.supported ? "Your words will appear here…" : "Type what you said…") : "Yesterday I go to the market with my sister.";
+    updateHint();
+  }
+  function updateHint() {
+    var h = $("text-hint");
+    if (session) { h.textContent = HINT.listening; h.className = "hint listening"; }
+    else { h.textContent = form.mode === "record" ? HINT.record : HINT.type; h.className = "hint"; }
+    $("attached").hidden = !(form.mode === "type" && form.audio);
+  }
+  $("tab-type").onclick = function () { setMode("type"); };
+  $("tab-record").onclick = function () { setMode("record"); };
+  $("show-record").onclick = function () { setMode("record"); $("tab-record").focus(); };
+  document.querySelector(".tabs").addEventListener("keydown", function (e) {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    var next = form.mode === "type" ? "record" : "type";
+    setMode(next); $(next === "type" ? "tab-type" : "tab-record").focus(); e.preventDefault();
+  });
+  $("text").addEventListener("input", function () { form.textFromSpeech = false; });
+
+  /* ---------- composer: marks ---------- */
+  function setStatus(s) { form.status = s; document.querySelectorAll("[data-status]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.status === s)); }); }
+  function setStar(v) { form.starred = v; $("star-new").setAttribute("aria-pressed", String(v)); }
+  document.querySelectorAll("[data-status]").forEach(function (b) { b.onclick = function () { setStatus(b.dataset.status); }; });
+
+  /* ---------- composer: color ---------- */
+  $("cat-pick").innerHTML = '<button class="chip cat-chip cat-none" type="button" role="radio" data-pick="" aria-checked="true"><span class="swatch" aria-hidden="true"></span>No color</button>' +
+    CATEGORIES.map(function (c) {
+      return '<button class="chip cat-chip cat-' + c.id + '" type="button" role="radio" data-pick="' + c.id + '" aria-checked="false"><span class="swatch" aria-hidden="true"></span>' + esc(c.label) + "</button>";
+    }).join("");
+  function setCategory(id) {
+    form.category = id || null;
+    $("cat-pick").querySelectorAll("[data-pick]").forEach(function (b) { b.setAttribute("aria-checked", String((b.dataset.pick || null) === form.category)); });
+  }
+  $("cat-pick").querySelectorAll("[data-pick]").forEach(function (b) { b.onclick = function () { setCategory(b.dataset.pick); }; });
+  $("star-new").onclick = function () { setStar(!form.starred); };
+
+  /* ---------- composer: audio ---------- */
+  function setRecButton(state) {
+    var b = $("rec-btn");
+    b.disabled = state === "starting";
+    b.classList.toggle("rec", state === "recording");
+    if (state === "recording") b.innerHTML = '<span class="dot" aria-hidden="true"></span><span>Stop recording</span>';
+    else if (state === "starting") b.innerHTML = MIC_SVG + "<span>Starting…</span>";
+    else b.innerHTML = MIC_SVG + "<span>" + (form.audio ? "Record again" : "Record") + "</span>";
+  }
+
+  function showPreview(audio) {
+    if (previewPlayer) { previewPlayer.destroy(); previewPlayer = null; }
+    var box = $("preview");
+    box.innerHTML = "";
+    if (audio) {
+      previewPlayer = Player.create({ blob: audio.blob, duration: audio.duration, peaks: audio.peaks, label: "your recording", fileName: fileStamp() });
+      box.appendChild(previewPlayer.el);
+    }
+    $("clear-audio").hidden = !audio;
+  }
+
+  function setAudio(audio, changed) {
+    form.audio = audio;
+    if (changed) form.audioChanged = true;
+    showPreview(audio);
+    setRecButton("idle");
+    updateHint();
+  }
+
+  $("clear-audio").onclick = function () {
+    setAudio(null, true);
+    audioMsg("Recording removed.");
+  };
+
+  function startTranscription() {
+    if (!Speech.supported) return;
+    var t = $("text");
+    var base = ""; // a new recording replaces the sentence with what you say
+    t.value = "";
+    $("correction").value = ""; setStatus("none");
+    speech = Speech.start({
+      lang: "en-US",
+      onText: function (txt) { t.value = base + txt; form.textFromSpeech = true; },
+      onError: function (code) {
+        if (code === "network") audioMsg("Recording works, but speech-to-text needs an internet connection. Type what you said instead.", "err");
+        else if (code === "not-allowed" || code === "service-not-allowed") audioMsg("Recording works, but this browser blocked speech-to-text. Type what you said instead.", "err");
+      }
+    });
+    if (speech) speech.base = base;
+  }
+
+  async function finishTranscription() {
+    if (!speech) return;
+    var s = speech; speech = null;
+    var txt = await s.stop();
+    if (txt) { $("text").value = s.base + txt; form.textFromSpeech = true; }
+  }
+
+  $("rec-btn").onclick = async function () {
+    if (session) { session.stop(); return; }
+    if (starting) return;
+    starting = true;
+    Player.pauseAll();
+    setRecButton("starting");
+    audioMsg("Waiting for the microphone… allow it if your browser asks.");
+    try {
+      session = await Rec.start({
+        canvas: $("live-meter"),
+        onTick: function (s) { $("live-time").textContent = Player.fmt(s); },
+        onAutoStop: function () { audioMsg("Recording stopped at the 5-minute limit."); }
+      });
+    } catch (err) {
+      starting = false; session = null;
+      setRecButton("idle");
+      audioMsg(Rec.errorMessage(err), "err");
+      return;
+    }
+    starting = false;
+    $("live-time").textContent = "0:00";
+    $("live").hidden = false;
+    setRecButton("recording");
+    $("tab-type").disabled = true;
+    audioMsg("Recording… say your sentence, then press Stop recording.");
+    clearAiResult();
+    startTranscription();
+    updateHint();
+
+    var s = session;
+    try {
+      var res = await s.finished;
+      audioMsg("Preparing your recording…");
+      var both = await Promise.all([Rec.analyze(res.blob, res.seconds), finishTranscription()]);
+      var info = both[0];
+      setAudio({ blob: res.blob, type: res.blob.type, duration: info.duration || res.seconds, peaks: info.peaks }, true);
+      var heard = $("text").value.trim();
+      audioMsg(heard ? "Recording ready. Check the text above, then press “Check grammar”." : "Recording ready. Type what you said above, then press “Check grammar”.", "ok");
+    } catch (err) {
+      await finishTranscription();
+      audioMsg(err && err.name === "empty" ? "Nothing was recorded. Check your microphone and try again." : Rec.errorMessage(err), "err");
+    } finally {
+      session = null;
+      $("live").hidden = true;
+      $("tab-type").disabled = false;
+      setRecButton("idle");
+      updateHint();
+    }
+  };
+
+  $("file-btn").onclick = function () { $("file-input").click(); };
+  $("file-input").onchange = async function (e) {
+    var file = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    var type = (file.type || "").toLowerCase(), name = (file.name || "").toLowerCase();
+    var looksAudio = type.indexOf("audio/") === 0 || type === "video/mp4" || type === "video/webm" || /\.(m4a|mp3|wav|ogg|oga|opus|webm|mp4|aac|flac)$/.test(name);
+    if (!looksAudio) { audioMsg("That file isn't a recording. Choose an audio file such as M4A, MP3, WAV or WebM.", "err"); return; }
+    audioMsg("Opening the recording…");
+    var info = await Rec.analyze(file, 0);
+    if (!info.decodable) { audioMsg("This browser can't play that file. Try an M4A, MP3, WAV or WebM recording.", "err"); return; }
+    setAudio({ blob: file, type: file.type || "audio/mpeg", duration: info.duration, peaks: info.peaks }, true);
+    audioMsg("Recording ready. Type what you said above, then press “Check grammar”.", "ok");
+  };
+
+  /* ---------- grammar check (LanguageTool, free, no key) ---------- */
+  var CHECK_LABEL = "Check grammar";
+
+  async function askAI(text, spoken) {
+    var r = await window.MywordChecker.check(text, { spoken: !!spoken });
+    var correction = String(r.correction || "").trim();
+    return { correct: r.correct, correction: correction === text.trim() ? "" : correction, explanation: String(r.explanation || "").trim() };
+  }
+
+  function clearAiResult() { $("ai-result").hidden = true; $("ai-result").innerHTML = ""; form.explanation = ""; form.checkedText = null; }
+
+  function showAiResult(text, r) {
+    var box = $("ai-result");
+    var note = r.explanation ? '<p class="explain">' + esc(r.explanation) + "</p>" : "";
+    if (r.correct) box.innerHTML = '<span class="verdict ok">✓ No mistakes found.</span>' + note;
+    else if (r.correction) box.innerHTML = '<span class="verdict fix">Needs a few changes</span><p class="changes">' + diffHtml(text, r.correction, true) + "</p>" + note;
+    else box.innerHTML = '<span class="verdict fix">Possible problems</span>' + note;
+    box.hidden = false;
+  }
+
+  function setAiBusy(btn, busy, label) {
+    btn.disabled = busy;
+    btn.querySelector("span:not(.ai-spin)").textContent = busy ? "Checking…" : label;
+    var spin = btn.querySelector(".ai-spin");
+    if (busy && !spin) { spin = document.createElement("span"); spin.className = "ai-spin"; spin.setAttribute("aria-hidden", "true"); btn.insertBefore(spin, btn.firstChild); btn.querySelector("svg").style.display = "none"; }
+    if (!busy && spin) { spin.remove(); btn.querySelector("svg").style.display = ""; }
+  }
+
+  $("ai-btn").onclick = async function () {
+    if (session) { aiMsg("Stop the recording first.", "err"); return; }
+    var text = $("text").value.trim();
+    if (!text) {
+      aiMsg(form.mode === "record" ? "Record your sentence first (or type what you said)." : "Type your sentence first.", "err");
+      $("text").focus(); return;
+    }
+    var b = $("ai-btn");
+    // Don't leave an earlier sentence's result on screen while (or if) this check fails.
+    if (form.checkedText && form.checkedText !== text) { $("correction").value = ""; setStatus("none"); }
+    clearAiResult();
+    setAiBusy(b, true, CHECK_LABEL); aiMsg("");
+    try {
+      var r = await askAI(text, !!form.audio);
+      $("correction").value = r.correction;
+      form.explanation = r.explanation; form.checkedText = text;
+      showAiResult(text, r);
+      setStatus(r.correct ? "correct" : "review");
+      aiMsg(r.correct ? "" : r.correction ? "The corrected sentence is in the box above. You can still edit it, then save." : "The checker found something but has no automatic fix. Read the note and type your own correction.", "ok");
+    } catch (e) { aiMsg(e.message || "Couldn't check the sentence. Try again.", "err"); }
+    finally { setAiBusy(b, false, CHECK_LABEL); }
+  };
+
+  /* ---------- composer: save / edit ---------- */
+  function resetForm() {
+    if (session) session.stop();
+    $("text").value = ""; $("correction").value = ""; $("tags").value = "";
+    setStatus("none"); setStar(false); setCategory(null);
+    setFormGroup(f.group && f.group !== "none" ? f.group : null); // new sentences go into the group you're viewing
+    form.editingId = null; form.audioChanged = false; form.textFromSpeech = false;
+    clearAiResult(); aiMsg("");
+    setAudio(null, false);
+    $("editing").hidden = true; $("save").textContent = "Save sentence";
+    audioMsg(DEFAULT_AUDIO_MSG);
+  }
+  $("cancel-edit").onclick = function () { resetForm(); saveMsg(""); };
+
+  $("save").onclick = async function () {
+    if (session) { audioMsg("Stop the recording first, then save.", "err"); return; }
+    var text = $("text").value.trim(), correction = $("correction").value.trim();
+    var a = form.audio;
+    if (!text && !a) { saveMsg("Write a sentence or record one first.", "err"); $("text").focus(); return; }
+    var btn = $("save"); btn.disabled = true; saveMsg("Saving…");
+    try {
+      var now = Date.now();
+      var data = {
+        kind: a ? "spoken" : "written",
+        text: text, correction: correction,
+        explanation: form.explanation || "",
+        tags: parseTags($("tags").value),
+        status: form.status, starred: form.starred, category: form.category, group: groupOf(form.group) ? form.group : null,
+        updatedAt: now
+      };
+      if (!form.editingId || form.audioChanged) {
+        data.audio = a ? a.blob : null;
+        data.audioType = a ? (a.type || a.blob.type || "") : null;
+        data.duration = a ? a.duration : 0;
+        data.peaks = a ? a.peaks : null;
+        data.audioKey = a ? now : 0;
+      }
+      if (form.editingId) {
+        var updated = await store.update(form.editingId, data);
+        if (updated) items = items.map(function (x) { return x.id === updated.id ? updated : x; });
+      } else {
+        data.createdAt = now;
+        var added = await store.add(data);
+        items.unshift(added);
+      }
+      resetForm(); render();
+      saveMsg("Saved.", "ok");
+      setTimeout(function () { if ($("save-msg").textContent === "Saved.") saveMsg(""); }, 2500);
+    } catch (e) {
+      console.error(e);
+      saveMsg(e && e.name === "QuotaExceededError" ? "Your browser is out of storage space. Delete some recordings and try again." : "Couldn't save. Try again.", "err");
+    } finally { btn.disabled = false; }
+  };
+
+  function startEdit(it) {
+    resetForm();
+    saveMsg("");
+    form.editingId = it.id;
+    $("text").value = it.text || ""; $("correction").value = it.correction || ""; $("tags").value = (it.tags || []).join(", ");
+    form.explanation = it.explanation || "";
+    if (it.explanation && it.text) showAiResult(it.text, { correct: it.status === "correct", correction: it.correction || "", explanation: it.explanation });
+    setStatus(it.status || "none"); setStar(!!it.starred); setCategory(it.category); setFormGroup(it.group);
+    if (it.audio) {
+      setAudio({ blob: it.audio, type: it.audioType, duration: it.duration, peaks: it.peaks }, false);
+      audioMsg("Keep this recording, or record a new one to replace it.");
+    }
+    setMode(it.audio ? "record" : "type");
+    $("editing").hidden = false; $("save").textContent = "Save changes";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    $("text").focus({ preventScroll: true });
+  }
+
+  /* ---------- filters ---------- */
+  function bindSeg(id, key, attr) {
+    $(id).querySelectorAll("button").forEach(function (b) {
+      b.onclick = function () { f[key] = b.dataset[attr]; $(id).querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); }); render(); };
+    });
+  }
+  bindSeg("mark-filter", "mark", "mark");
+  $("q").oninput = function () { f.q = this.value; render(); };
+
+  function matches(it) {
+    if (f.group === "none" && groupOf(it.group)) return false;
+    if (f.group && f.group !== "none" && it.group !== f.group) return false;
+    if (f.mark === "star" && !it.starred) return false;
+    if (f.tag && (it.tags || []).indexOf(f.tag) < 0) return false;
+    var q = f.q.trim().toLowerCase();
+    if (q && ((it.text || "") + "\n" + (it.correction || "")).toLowerCase().indexOf(q) < 0) return false;
+    return true;
+  }
+
+  /* ---------- groups ---------- */
+  var FOLDER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h4.6l2 2.2h8.4A1.5 1.5 0 0 1 21 8.7v9.8a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z"/></svg>';
+  var ALL_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>';
+
+  function groupOf(id) { if (!id) return null; for (var i = 0; i < groups.length; i++) if (groups[i].id === id) return groups[i]; return null; }
+  function groupMsg(t, cls) { setMsg("group-msg", t, cls); }
+  function countIn(id) { return items.filter(function (it) { return id === "none" ? !groupOf(it.group) : it.group === id; }).length; }
+  function plural(n, one, many) { return n + " " + (n === 1 ? one : many); }
+
+  function checkName(name, exceptId) {
+    name = String(name || "").replace(/\s+/g, " ").trim();
+    if (!name) return { error: "Type a name for the group." };
+    if (name.length > 40) return { error: "Keep the group name under 40 characters." };
+    var clash = groups.find(function (g) { return g.id !== exceptId && g.name.toLowerCase() === name.toLowerCase(); });
+    if (clash) return { error: "You already have a group called “" + clash.name + "”." };
+    return { name: name };
+  }
+
+  async function createGroup(name) {
+    var c = checkName(name);
+    if (c.error) throw { user: c.error };
+    var g = await store.groups.add({ name: c.name, createdAt: Date.now() });
+    groups.push(g);
+    renderGroupSelect();
+    return g;
+  }
+
+  function goToGroup(id) {
+    f.group = id || null;
+    rememberGroup(f.group);
+    groupEdit = null; groupMsg("");
+    // An empty composer follows the group you're looking at.
+    if (!form.editingId && !$("text").value.trim() && !form.audio) setFormGroup(f.group && f.group !== "none" ? f.group : null);
+    render();
+  }
+
+  function renderGroups() {
+    if (f.group && f.group !== "none" && !groupOf(f.group)) { f.group = null; rememberGroup(null); }
+    var nav = $("group-nav"), total = items.length;
+    var html = '<button class="group-btn" type="button" data-nav="" aria-current="' + !f.group + '">' + ALL_ICON + '<span class="gname">All sentences</span><span class="n">' + total + "</span></button>";
+    groups.forEach(function (g) {
+      html += '<button class="group-btn" type="button" data-nav="' + esc(g.id) + '" aria-current="' + (f.group === g.id) + '">' + FOLDER + '<span class="gname">' + esc(g.name) + '</span><span class="n">' + countIn(g.id) + "</span></button>";
+    });
+    var loose = countIn("none");
+    if (groups.length && (loose || f.group === "none")) {
+      html += '<button class="group-btn" type="button" data-nav="none" aria-current="' + (f.group === "none") + '"><span class="gname">No group</span><span class="n">' + loose + "</span></button>";
+    }
+    nav.innerHTML = html;
+    nav.querySelectorAll("[data-nav]").forEach(function (b) { b.onclick = function () { goToGroup(b.dataset.nav || null); }; });
+    if (!groups.length && !$("group-msg").textContent) groupMsg("Make groups like “Lesson 5” or “Interview prep” to keep sentences together.");
+
+    var bar = $("group-bar"), g = groupOf(f.group);
+    if (!f.group) { bar.hidden = true; bar.innerHTML = ""; return; }
+    bar.hidden = false;
+    if (f.group === "none") {
+      bar.innerHTML = '<span class="title">Sentences without a group <span class="sub">· ' + plural(loose, "sentence", "sentences") + "</span></span>";
+      return;
+    }
+    var n = countIn(g.id);
+    if (groupEdit === "rename") {
+      bar.innerHTML = '<label class="sr" for="rename-input">New name for this group</label><input type="text" id="rename-input" maxlength="40" value="' + esc(g.name) + '">' +
+        '<button class="btn primary" type="button" data-gact="rename-save">Save</button><button class="btn ghost" type="button" data-gact="cancel">Cancel</button>';
+      var inp = $("rename-input");
+      setTimeout(function () { inp.focus(); inp.select(); }, 0);
+      inp.onkeydown = function (e) { if (e.key === "Enter") { e.preventDefault(); bar.querySelector('[data-gact="rename-save"]').click(); } if (e.key === "Escape") { groupEdit = null; renderGroups(); } };
+    } else if (groupEdit === "delete") {
+      bar.innerHTML = '<span class="title">Delete “' + esc(g.name) + '”?<span class="sub">' + (n ? " Its " + plural(n, "sentence", "sentences") + " will be kept, without a group." : "") + "</span></span>" +
+        '<button class="btn danger" type="button" data-gact="delete-yes">Delete group</button><button class="btn ghost" type="button" data-gact="cancel">Keep</button>';
+    } else {
+      bar.innerHTML = '<span class="title">' + FOLDER + esc(g.name) + ' <span class="sub">· ' + plural(n, "sentence", "sentences") + "</span></span>" +
+        '<button class="btn ghost" type="button" data-gact="rename">Rename</button><button class="btn danger" type="button" data-gact="delete">Delete group</button>';
+    }
+    bar.querySelectorAll("[data-gact]").forEach(function (b) {
+      b.onclick = async function () {
+        var a = b.dataset.gact;
+        if (a === "rename" || a === "delete") { groupEdit = a; groupMsg(""); renderGroups(); return; }
+        if (a === "cancel") { groupEdit = null; groupMsg(""); renderGroups(); return; }
+        try {
+          if (a === "rename-save") {
+            var c = checkName($("rename-input").value, g.id);
+            if (c.error) { groupMsg(c.error, "err"); return; }
+            var upd = await store.groups.update(g.id, { name: c.name });
+            groups = groups.map(function (x) { return x.id === g.id ? upd : x; });
+            groupEdit = null; groupMsg("Group renamed.", "ok");
+          } else if (a === "delete-yes") {
+            var members = items.filter(function (it) { return it.group === g.id; });
+            for (var i = 0; i < members.length; i++) await store.update(members[i].id, { group: null });
+            await store.groups.remove(g.id);
+            items = items.map(function (it) { return it.group === g.id ? Object.assign({}, it, { group: null }) : it; });
+            groups = groups.filter(function (x) { return x.id !== g.id; });
+            groupEdit = null; f.group = null; rememberGroup(null);
+            if (form.group === g.id) setFormGroup(null);
+            groupMsg("Group “" + g.name + "” deleted." + (members.length ? " Its sentences are still in All sentences." : ""), "ok");
+          }
+          renderGroupSelect(); render();
+        } catch (e) { console.error(e); groupMsg("Couldn't change the group. Try again.", "err"); }
+      };
+    });
+  }
+
+  // "New group" form in the Groups area
+  function showGroupForm(show) {
+    $("group-form").hidden = !show;
+    if (show) { $("group-name").value = ""; $("group-name").focus(); groupMsg(""); }
+  }
+  $("new-group-btn").onclick = function () { showGroupForm($("group-form").hidden); };
+  $("group-cancel").onclick = function () { showGroupForm(false); };
+  $("group-form").onsubmit = async function (e) {
+    e.preventDefault();
+    try {
+      var g = await createGroup($("group-name").value);
+      showGroupForm(false);
+      goToGroup(g.id);
+      groupMsg("Group “" + g.name + "” created. New sentences you save now go into it.", "ok");
+    } catch (err) { groupMsg(err.user || "Couldn't create the group. Try again.", "err"); if (!err.user) console.error(err); }
+  };
+  $("group-name").onkeydown = function (e) { if (e.key === "Escape") showGroupForm(false); };
+
+  // Group picker in the composer
+  function renderGroupSelect() {
+    var sel = $("group-select");
+    sel.innerHTML = '<option value="">No group</option>' +
+      groups.map(function (g) { return '<option value="' + esc(g.id) + '">' + esc(g.name) + "</option>"; }).join("") +
+      '<option value="__new">+ New group…</option>';
+    sel.value = groupOf(form.group) ? form.group : "";
+  }
+  function showComposerNewGroup(show) {
+    $("composer-group-name").hidden = !show; $("composer-group-add").hidden = !show;
+    if (show) { $("composer-group-name").value = ""; $("composer-group-name").focus(); }
+  }
+  function setFormGroup(id) {
+    form.group = groupOf(id) ? id : null;
+    $("group-select").value = form.group || "";
+    showComposerNewGroup(false);
+  }
+  $("group-select").onchange = function () {
+    if (this.value === "__new") { showComposerNewGroup(true); return; }
+    form.group = this.value || null; showComposerNewGroup(false);
+  };
+  async function addComposerGroup() {
+    try {
+      var g = await createGroup($("composer-group-name").value);
+      setFormGroup(g.id); saveMsg(""); render();
+    } catch (err) { saveMsg(err.user || "Couldn't create the group. Try again.", "err"); if (!err.user) console.error(err); }
+  }
+  $("composer-group-add").onclick = addComposerGroup;
+  $("composer-group-name").onkeydown = function (e) {
+    if (e.key === "Enter") { e.preventDefault(); addComposerGroup(); }
+    if (e.key === "Escape") { setFormGroup(form.group); }
+  };
+
+  /* ---------- players for saved sentences ---------- */
+  function playerFor(it) {
+    var key = String(it.audioKey || it.createdAt);
+    var c = players.get(it.id);
+    if (c && c.key === key) return c.player;
+    if (c) c.player.destroy();
+    var p = Player.create({ blob: it.audio, duration: it.duration, peaks: it.peaks, label: it.text ? "recording: " + it.text.slice(0, 40) : "recording", fileName: fileStamp(it.createdAt) });
+    players.set(it.id, { key: key, player: p });
+    return p;
+  }
+  function dropStalePlayers() {
+    var live = {};
+    items.forEach(function (it) { if (it.audio) live[it.id] = 1; });
+    players.forEach(function (c, id) { if (!live[id]) { c.player.destroy(); players.delete(id); } });
+  }
+
+  /* ---------- render ---------- */
+  var ICON = {
+    star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>',
+    edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
+    del: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',
+    palette: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.7-.9 1.4-1.9-.3-1 .4-2.1 1.5-2.1H17a4 4 0 0 0 4-4c0-5.5-4-10-9-10z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10" cy="7" r="1.2"/><circle cx="15" cy="7.5" r="1.2"/></svg>'
+  };
+
+  function bindTagButtons(root) {
+    root.querySelectorAll("[data-tag]").forEach(function (b) { b.onclick = function () { f.tag = f.tag === b.dataset.tag ? null : b.dataset.tag; render(); }; });
+  }
+
+  function render() {
+    var total = items.length;
+    $("count").textContent = loaded ? total + (total === 1 ? " sentence" : " sentences") : "";
+    dropStalePlayers();
+
+    var tagCount = {};
+    items.forEach(function (it) { (it.tags || []).forEach(function (t) { tagCount[t] = (tagCount[t] || 0) + 1; }); });
+    var tags = Object.keys(tagCount).sort();
+    if (f.tag && !tagCount[f.tag]) f.tag = null;
+    $("tag-filter").innerHTML = tags.map(function (t) { return '<button class="tag" type="button" data-tag="' + esc(t) + '" aria-pressed="' + (f.tag === t) + '">#' + esc(t) + " · " + tagCount[t] + "</button>"; }).join("");
+    bindTagButtons($("tag-filter"));
+
+    var list = $("list");
+    if (!loaded) return;
+    renderGroups();
+    if (!total) {
+      list.innerHTML = '<div class="empty-state"><strong>Your notebook is empty</strong>Type or record your first sentence above.</div>';
+      $("summary").textContent = ""; return;
+    }
+    var shown = items.filter(matches);
+    var q = f.q.trim();
+    var inScope = items.filter(function (it) { return f.group === "none" ? !groupOf(it.group) : !f.group || it.group === f.group; }).length;
+    $("summary").innerHTML = q ? esc(shown.length) + (shown.length === 1 ? " sentence contains " : " sentences contain ") + "“" + esc(q) + "”" : (shown.length === inScope ? "" : "Showing " + shown.length + " of " + inScope);
+    if (!shown.length) {
+      var emptyGroup = f.group && f.group !== "none" && !inScope;
+      list.innerHTML = emptyGroup
+        ? '<div class="empty-state"><strong>This group is empty</strong>Save a new sentence while this group is open, or use the Group button on any sentence to move it here.</div>'
+        : '<div class="empty-state"><strong>No sentences found</strong>Try another word, or clear the filters.</div>';
+      return;
+    }
+
+    list.innerHTML = shown.map(function (it) {
+      var status = it.status === "correct" ? '<span class="pill correct">Correct</span>' : it.status === "review" ? '<span class="pill review">Needs work</span>' : "";
+      var text = it.text ? '<p class="sentence">' + hl(it.text) + "</p>" : '<p class="sentence empty">No text yet. Edit to type what you said.</p>';
+      var corrBody = it.correction ? (q ? hl(it.correction) : diffHtml(it.text, it.correction, false)) : "";
+      var corr = (it.correction ? '<p class="correction"><b>Correction</b>' + corrBody + "</p>" : "") + (it.explanation ? '<p class="explain">' + esc(it.explanation) + "</p>" : "");
+      var audio = it.audio ? '<div class="player-slot" data-player="' + esc(it.id) + '"></div>' : "";
+      var dur = it.audio && it.duration ? "<span>" + Player.fmt(it.duration) + "</span>" : "";
+      var tagHtml = (it.tags || []).length ? '<div class="tags">' + it.tags.map(function (t) { return '<button class="tag" type="button" data-tag="' + esc(t) + '" aria-pressed="' + (f.tag === t) + '">#' + esc(t) + "</button>"; }).join("") + "</div>" : "";
+      var del = confirmDel === it.id
+        ? '<span class="msg">Delete this sentence?</span><button class="icon-btn del-yes" type="button" data-act="del-yes">Delete</button><button class="icon-btn" type="button" data-act="del-no">Keep</button>'
+        : '<button class="icon-btn" type="button" data-act="del" aria-label="Delete">' + ICON.del + "</button>";
+      var cat = categoryOf(it.category);
+      var catPill = cat ? '<span class="cat-pill"><span class="swatch" aria-hidden="true"></span>' + esc(cat.label) + "</span>" : "";
+      var menu = colorMenu === it.id
+        ? '<div class="cat-menu" role="group" aria-label="Color for this sentence">' + CATEGORIES.map(function (c) {
+            return '<button class="chip cat-chip cat-' + c.id + '" type="button" data-cat="' + c.id + '" aria-checked="' + (it.category === c.id) + '" role="radio"><span class="swatch" aria-hidden="true"></span>' + esc(c.label) + "</button>";
+          }).join("") + '<button class="chip cat-chip cat-none" type="button" data-cat="" role="radio" aria-checked="' + !cat + '"><span class="swatch" aria-hidden="true"></span>No color</button></div>'
+        : "";
+      var grp = groupOf(it.group);
+      var grpChip = grp && f.group !== grp.id ? '<button class="group-chip" type="button" data-goto="' + esc(grp.id) + '" title="Open this group">' + FOLDER + esc(grp.name) + "</button>" : "";
+      if (groupMenu === it.id) {
+        menu += '<div class="group-menu" role="group" aria-label="Group for this sentence">' +
+          groups.map(function (g) { return '<button class="chip" type="button" role="radio" data-setgroup="' + esc(g.id) + '" aria-checked="' + (it.group === g.id) + '">' + esc(g.name) + "</button>"; }).join("") +
+          '<button class="chip" type="button" role="radio" data-setgroup="" aria-checked="' + !grp + '">No group</button>' +
+          '<form class="new" data-newgroup><label class="sr" for="ng-' + esc(it.id) + '">New group name</label><input type="text" id="ng-' + esc(it.id) + '" maxlength="40" placeholder="New group…" autocomplete="off"><button class="btn secondary" type="submit">Add</button></form>' +
+          '<p class="msg err group-menu-msg" hidden></p></div>';
+      }
+      return '<article class="entry' + (cat ? " has-cat cat-" + cat.id : "") + '" data-id="' + esc(it.id) + '">' +
+        '<div class="meta"><span class="kind">' + (it.kind === "spoken" ? "Spoken" : "Written") + "</span>" + grpChip + catPill + status + "<span>" + esc(fmtDate(it.createdAt)) + "</span>" + dur + "</div>" +
+        audio + text + corr + tagHtml +
+        '<p class="msg err entry-msg" hidden></p>' +
+        '<div class="actions">' +
+          '<button class="icon-btn' + (it.starred ? " on" : "") + '" type="button" data-act="star" aria-pressed="' + !!it.starred + '">' + ICON.star + "Favourite</button>" +
+          '<button class="icon-btn' + (it.status === "correct" ? " is-correct" : "") + '" type="button" data-act="correct" aria-pressed="' + (it.status === "correct") + '">✓ Correct</button>' +
+          '<button class="icon-btn" type="button" data-act="color" aria-expanded="' + (colorMenu === it.id) + '">' + (cat ? '<span class="swatch" aria-hidden="true"></span>' : ICON.palette) + "Color</button>" +
+          '<button class="icon-btn" type="button" data-act="group" aria-expanded="' + (groupMenu === it.id) + '">' + FOLDER + "Group</button>" +
+          '<span class="spacer"></span>' +
+          '<button class="icon-btn" type="button" data-act="edit">' + ICON.edit + "Edit</button>" + del +
+        "</div>" + menu + "</article>";
+    }).join("");
+
+    list.querySelectorAll(".entry").forEach(function (el) {
+      var it = items.find(function (x) { return x.id === el.dataset.id; });
+      var slot = el.querySelector("[data-player]");
+      if (slot && it.audio) slot.appendChild(playerFor(it).el);
+      bindTagButtons(el);
+      el.querySelectorAll("[data-cat]").forEach(function (b) {
+        b.onclick = async function () {
+          colorMenu = null;
+          try { await patch(it.id, { category: b.dataset.cat || null }); }
+          catch (e) { console.error(e); saveMsg("Couldn't change the color. Try again.", "err"); }
+        };
+      });
+      el.querySelectorAll("[data-goto]").forEach(function (b) {
+        b.onclick = function () { goToGroup(b.dataset.goto); document.querySelector(".groups").scrollIntoView({ behavior: "smooth", block: "start" }); };
+      });
+      el.querySelectorAll("[data-setgroup]").forEach(function (b) {
+        b.onclick = async function () {
+          groupMenu = null;
+          try { await patch(it.id, { group: b.dataset.setgroup || null }); }
+          catch (e) { console.error(e); saveMsg("Couldn't move the sentence. Try again.", "err"); }
+        };
+      });
+      var ng = el.querySelector("[data-newgroup]");
+      if (ng) {
+        if (!groups.length) ng.querySelector("input").focus(); // no groups yet: creating one is the only choice
+        ng.onsubmit = async function (e) {
+          e.preventDefault();
+          try {
+            var g = await createGroup(ng.querySelector("input").value);
+            groupMenu = null;
+            await patch(it.id, { group: g.id });
+          } catch (err) {
+            var m = el.querySelector(".group-menu-msg");
+            m.textContent = err.user || "Couldn't create the group. Try again."; m.hidden = false;
+            if (!err.user) console.error(err);
+          }
+        };
+      }
+      el.querySelectorAll("[data-act]").forEach(function (b) {
+        b.onclick = async function () {
+          var a = b.dataset.act;
+          try {
+            if (a === "star") await patch(it.id, { starred: !it.starred });
+            else if (a === "correct") await patch(it.id, { status: it.status === "correct" ? "none" : "correct" });
+            else if (a === "color") { colorMenu = colorMenu === it.id ? null : it.id; groupMenu = null; render(); }
+            else if (a === "group") { groupMenu = groupMenu === it.id ? null : it.id; colorMenu = null; render(); }
+            else if (a === "edit") startEdit(it);
+            else if (a === "del") { confirmDel = it.id; render(); }
+            else if (a === "del-no") { confirmDel = null; render(); }
+            else if (a === "del-yes") {
+              confirmDel = null;
+              await store.remove(it.id);
+              items = items.filter(function (x) { return x.id !== it.id; });
+              if (form.editingId === it.id) resetForm();
+              render();
+            }
+          } catch (e) { console.error(e); saveMsg("Couldn't update that sentence. Try again.", "err"); }
+        };
+      });
+    });
+  }
+
+  async function patch(id, data) {
+    var updated = await store.update(id, data);
+    if (updated) items = items.map(function (x) { return x.id === id ? updated : x; });
+    render();
+  }
+
+  /* ---------- backup: export / import ---------- */
+  var BACKUP_APP = "myword-notebook", BACKUP_VERSION = 2; // 2: adds groups
+  function backupMsg(t, cls) { setMsg("backup-msg", t, cls); }
+
+  function blobToDataUrl(blob) {
+    return new Promise(function (resolve, reject) {
+      var r = new FileReader();
+      r.onload = function () { resolve(r.result); };
+      r.onerror = function () { reject(r.error); };
+      r.readAsDataURL(blob);
+    });
+  }
+  function dataUrlToBlob(url) {
+    var m = /^data:([^;,]*)(;base64)?,(.*)$/.exec(url || "");
+    if (!m || !m[2]) return null;
+    var bin = atob(m[3]), bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new Blob([bytes], { type: m[1] || "audio/webm" });
+  }
+  function fmtSize(n) { return n > 1048576 ? (n / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(n / 1024)) + " KB"; }
+
+  $("export-btn").onclick = async function () {
+    var b = this;
+    try {
+      var all = await store.all(), allGroups = await store.groups.all();
+      if (!all.length && !allGroups.length) { backupMsg("Your notebook is empty, so there's nothing to export yet.", "err"); return; }
+      b.disabled = true; backupMsg("Preparing your backup…");
+      var out = [];
+      for (var i = 0; i < all.length; i++) {
+        var it = Object.assign({}, all[i]);
+        it.audio = it.audio ? await blobToDataUrl(it.audio) : null;
+        out.push(it);
+      }
+      var json = JSON.stringify({ app: BACKUP_APP, version: BACKUP_VERSION, exportedAt: new Date().toISOString(), count: out.length, groups: allGroups, items: out });
+      var file = new Blob([json], { type: "application/json" });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(file);
+      a.download = fileStamp().replace("myword-", "myword-backup-") + ".json";
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 10000);
+      var withAudio = out.filter(function (x) { return x.audio; }).length;
+      backupMsg("Backup saved: " + plural(out.length, "sentence", "sentences") + (withAudio ? ", " + plural(withAudio, "recording", "recordings") : "") + (allGroups.length ? ", " + plural(allGroups.length, "group", "groups") : "") + " (" + fmtSize(file.size) + "). Look for it in your Downloads folder.", "ok");
+    } catch (e) {
+      console.error(e);
+      backupMsg("Couldn't create the backup. Try again.", "err");
+    } finally { b.disabled = false; }
+  };
+
+  // Only known fields are taken from a backup file, with their types checked.
+  function cleanImported(x, groupMap) {
+    if (!x || typeof x !== "object" || typeof x.id !== "string" || !x.id) return null;
+    var str = function (v) { return typeof v === "string" ? v : ""; };
+    var num = function (v, d) { return typeof v === "number" && isFinite(v) ? v : d; };
+    var audio = typeof x.audio === "string" ? dataUrlToBlob(x.audio) : null;
+    var created = num(x.createdAt, Date.now());
+    return {
+      id: x.id.slice(0, 100),
+      kind: audio ? "spoken" : "written",
+      text: str(x.text), correction: str(x.correction), explanation: str(x.explanation),
+      tags: Array.isArray(x.tags) ? x.tags.filter(function (t) { return typeof t === "string"; }).slice(0, 50) : [],
+      status: x.status === "correct" || x.status === "review" ? x.status : "none",
+      starred: x.starred === true,
+      category: categoryOf(x.category) ? x.category : null,
+      group: typeof x.group === "string" && groupMap[x.group] ? groupMap[x.group] : null,
+      createdAt: created, updatedAt: num(x.updatedAt, created),
+      audio: audio, audioType: audio ? (str(x.audioType) || audio.type) : null,
+      duration: audio ? num(x.duration, 0) : 0,
+      peaks: audio && Array.isArray(x.peaks) ? x.peaks.filter(function (p) { return typeof p === "number"; }).slice(0, 256) : null,
+      audioKey: audio ? num(x.audioKey, created) : 0
+    };
+  }
+
+  $("import-btn").onclick = function () { $("import-input").click(); };
+  $("import-input").onchange = async function (e) {
+    var file = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    var b = $("import-btn");
+    b.disabled = true; backupMsg("Reading the backup…");
+    try {
+      var data;
+      try { data = JSON.parse(await file.text()); } catch (err) { throw { user: "That file isn't a MYWORD backup (it couldn't be read)." }; }
+      if (!data || data.app !== BACKUP_APP || !Array.isArray(data.items)) throw { user: "That file isn't a MYWORD backup." };
+      if (data.version > BACKUP_VERSION) throw { user: "This backup was made by a newer version of MYWORD." };
+      // Groups first: reuse a group you already have (same id or same name), otherwise add it.
+      var groupMap = {}, groupsAdded = 0, haveGroups = await store.groups.all();
+      var importedGroups = Array.isArray(data.groups) ? data.groups : [];
+      for (var gi = 0; gi < importedGroups.length; gi++) {
+        var ig = importedGroups[gi];
+        if (!ig || typeof ig.id !== "string" || typeof ig.name !== "string") continue;
+        var gname = ig.name.replace(/\s+/g, " ").trim().slice(0, 40);
+        if (!gname) continue;
+        var same = haveGroups.find(function (h) { return h.id === ig.id; }) || haveGroups.find(function (h) { return h.name.toLowerCase() === gname.toLowerCase(); });
+        if (same) { groupMap[ig.id] = same.id; continue; }
+        var ng = { id: ig.id.slice(0, 100), name: gname, createdAt: typeof ig.createdAt === "number" ? ig.createdAt : Date.now() };
+        await store.groups.put(ng); haveGroups.push(ng); groupMap[ig.id] = ng.id; groupsAdded++;
+      }
+      var existing = {};
+      (await store.all()).forEach(function (it) { existing[it.id] = it; });
+      var added = 0, updated = 0, kept = 0, bad = 0;
+      for (var i = 0; i < data.items.length; i++) {
+        var rec = cleanImported(data.items[i], groupMap);
+        if (!rec) { bad++; continue; }
+        var have = existing[rec.id];
+        var haveGroupIds = haveGroups.map(function (h) { return h.id; });
+        if (!have) { await store.put(rec); added++; }
+        else if ((rec.updatedAt || 0) > (have.updatedAt || 0)) { await store.put(rec); updated++; }
+        else if (rec.group && haveGroupIds.indexOf(have.group) < 0) { await store.update(have.id, { group: rec.group }); updated++; } // put it back in its group
+        else kept++;
+      }
+      items = await store.all(); groups = await store.groups.all();
+      players.forEach(function (c) { c.player.destroy(); }); players.clear();
+      renderGroupSelect(); render();
+      var parts = [];
+      parts.push(added + " added");
+      if (updated) parts.push(updated + " updated");
+      if (kept) parts.push(kept + " already here");
+      if (bad) parts.push(bad + " skipped (damaged)");
+      if (groupsAdded) parts.push(plural(groupsAdded, "new group", "new groups"));
+      backupMsg("Backup imported: " + parts.join(", ") + ".", bad && !added && !updated ? "err" : "ok");
+    } catch (err) {
+      if (!(err && err.user)) console.error(err);
+      backupMsg(err && err.user ? err.user : err && err.name === "QuotaExceededError" ? "Your browser is out of storage space, so the backup couldn't be fully imported." : "Couldn't import the backup. Try again.", "err");
+    } finally { b.disabled = false; }
+  };
+
+  /* ---------- start ---------- */
+  setRecButton("idle");
+  setMode("type");
+  if (Rec.supportProblem()) audioMsg(Rec.errorMessage({ name: Rec.supportProblem() }) + " You can still choose a recording file.", "err");
+  renderGroupSelect();
+  window.addEventListener("myword-blocked", function () {
+    $("list").innerHTML = '<div class="empty-state"><strong>Almost ready</strong>MYWORD is also open in another tab with an older version. Close or reload that tab, and your notebook will appear here.</div>';
+  });
+  window.addEventListener("myword-outdated", function () {
+    saveMsg("A newer version of MYWORD was opened in another tab. Reload this page to keep saving.", "err");
+    $("save").disabled = true;
+  });
+  Promise.all([store.all(), store.groups.all()]).then(function (r) {
+    items = r[0]; groups = r[1]; loaded = true;
+    renderGroupSelect(); setFormGroup(f.group && f.group !== "none" ? f.group : null);
+    render();
+  }).catch(function (e) {
+    console.error(e);
+    loaded = true;
+    $("list").innerHTML = '<div class="empty-state"><strong>Your notebook can\'t load here</strong>This browser is blocking storage (private window or disabled site data). Open the page in a normal window to save sentences.</div>';
+    $("save").disabled = true;
+  });
+  render();
+})();
+
+</script>
 </body>
 </html>

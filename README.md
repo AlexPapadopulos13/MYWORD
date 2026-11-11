@@ -60,14 +60,9 @@ Sentences, recordings and groups are saved **only in your browser** (IndexedDB),
 ## Project structure
 
 ```
-index.html        Page layout
-css/styles.css    Styles and design tokens (light and dark themes)
-js/store.js       IndexedDB storage for sentences and groups
-js/recorder.js    Microphone recording, live meter, waveform analysis
-js/speech.js      Live speech-to-text (Web Speech API)
-js/player.js      Recorder-style audio player
-js/rules.js       Built-in grammar rules for common learner mistakes
-js/checker.js     Grammar check (built-in rules + LanguageTool)
-js/app.js         The notebook: composer, list, groups, colors, search, backup
-serve.ps1         Tiny local web server for Windows (PowerShell)
+index.html   The whole app in one file: page, styles and scripts
+serve.ps1    Tiny local web server for Windows (PowerShell)
+.nojekyll    Tells GitHub Pages to serve the files as they are
 ```
+
+Inside `index.html`, the scripts are in this order: storage (IndexedDB), microphone recorder, speech-to-text, grammar rules, grammar checker (rules + LanguageTool), audio player, and the notebook app itself.
